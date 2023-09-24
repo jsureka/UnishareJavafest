@@ -1,0 +1,28 @@
+const bangladeshUniversities = [
+  "University of Dhaka",
+  "Bangladesh University of Engineering and Technology (BUET)",
+  "University of Chittagong",
+  "University of Rajshahi",
+  "University of Khulna",
+  "Jahangirnagar University",
+  "Bangladesh Agricultural University",
+  "Islamic University, Bangladesh",
+  "Dhaka University of Engineering & Technology (DUET)",
+  "Bangladesh University of Professionals (BUP)",
+  "Shahjalal University of Science and Technology (SUST)",
+  "Chittagong University of Engineering & Technology (CUET)",
+  "Rajshahi University of Engineering & Technology (RUET)",
+  "Khulna University of Engineering & Technology (KUET)",
+  "Bangladesh University of Textiles (BUTex)",
+  "Jessore University of Science & Technology (JUST)",
+  "Comilla University",
+  "Barishal University",
+  "Begum Rokeya University, Rangpur",
+  "Hajee Mohammad Danesh Science & Technology University (HSTU)",
+  "Jatiya Kabi Kazi Nazrul Islam University",
+  "Noakhali Science and Technology University (NSTU)",
+  "Pabna University of Science and Technology (PUST)",
+  "Bangabandhu Sheikh Mujibur Rahman Science and Technology University",
+];
+
+export default bangladeshUniversities;

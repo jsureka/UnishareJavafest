@@ -1,0 +1,15 @@
+version: "3"
+services:
+  unishare-back-end:
+    image: "unishare-server"
+    container_name: unishare-server
+    ports:
+      - "8080:8080"
+
+  unishare-front-end:
+    image: "unishare-client"
+    container_name: unishare-client
+    ports:
+      - "3000:3000"
+    links:
+      - unishare-back-end
