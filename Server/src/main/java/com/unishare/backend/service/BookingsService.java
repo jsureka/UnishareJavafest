@@ -4,6 +4,7 @@ import com.unishare.backend.DTO.Request.BookingRequest;
 import com.unishare.backend.DTO.Response.BookingResponse;
 import com.unishare.backend.DTO.Response.ProductResponse;
 import com.unishare.backend.DTO.Response.UserResponse;
+import com.unishare.backend.DTO.SpecialResponse.PageResponse;
 import com.unishare.backend.exceptionHandlers.ErrorMessageException;
 import com.unishare.backend.exceptionHandlers.ProductNotFoundException;
 import com.unishare.backend.exceptionHandlers.UserNotFoundException;
@@ -16,6 +17,8 @@ import com.unishare.backend.repository.ProductRepository;
 import com.unishare.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,9 +38,19 @@ public class BookingsService {
     private final ProductService productService;
 
 
-    public List<BookingResponse> getAllBookings() {
-        List<Booking> bookings = bookingRepository.findAll();
-        return bookings.stream().map(this::convertToResponse).collect(Collectors.toList());
+    public PageResponse<List<BookingResponse>> getAllBookings(int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        PageResponse<List<BookingResponse>> pageResponse = new PageResponse<>();
+        Page<Booking> bookingPage = bookingRepository.findAll(PageRequest.of(page, size));
+        List<BookingResponse> bookings = bookingPage.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        pageResponse.setData(bookings);
+        pageResponse.setTotalPages(bookingPage.getTotalPages());
+        pageResponse.setTotalElements(bookingPage.getTotalElements());
+        pageResponse.setCurrentPage(bookingPage.getNumber());
+        pageResponse.setCurrentElements(bookingPage.getNumberOfElements());
+        return pageResponse;
     }
 
     public BookingResponse getBookingById(Long id) {
@@ -46,12 +59,6 @@ public class BookingsService {
             return convertToResponse(bookingOptional.get());
         }
         throw new RuntimeException("Booking not found with ID: " + id);
-    }
-
-    public List<BookingResponse> getAllBookingsByBorrower(String token) {
-        Long borrowerId = userService.getUserIdFromToken(token);
-        List<Booking> bookings = bookingRepository.findAllByBorrowerId(borrowerId);
-        return bookings.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
     public Product getProductById(Long id) {
@@ -272,24 +279,67 @@ public class BookingsService {
         return true;
     }
 
-//    public List<BookingResponse> getAllBookingsByOwner(String token) {
-//        Long ownerId = userService.getUserIdFromToken(token);
-//        List<Booking> bookings = bookingRepository.findAllByOwnerId(ownerId);
-//        return bookings.stream().map(this::convertToResponse).collect(Collectors.toList());
-//    }
-//
-    public List<BookingResponse> getAllBookingsByOwnerAndStatus(String token, String status) {
+    public PageResponse<List<BookingResponse>> getAllBookingsByOwnerAndStatus(String token, String status, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
         Long ownerId = userService.getUserIdFromToken(token);
-        List<Booking> bookings = bookingRepository.findBookingsByStatusAndOwnerId(ownerId, BookingStatus.valueOf(status));
-        return bookings.stream().map(this::convertToResponse).collect(Collectors.toList());
+        PageResponse<List<BookingResponse>> pageResponse = new PageResponse<>();
+        Page<Booking> bookingPage = bookingRepository.findBookingsByStatusAndOwnerId(ownerId, BookingStatus.valueOf(status), PageRequest.of(page, size));
+        List<BookingResponse> bookings = bookingPage.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        pageResponse.setData(bookings);
+        pageResponse.setTotalPages(bookingPage.getTotalPages());
+        pageResponse.setTotalElements(bookingPage.getTotalElements());
+        pageResponse.setCurrentPage(bookingPage.getNumber());
+        pageResponse.setCurrentElements(bookingPage.getNumberOfElements());
+        return pageResponse;
     }
-//
-    public List<BookingResponse> getAllBookingsByBorrowerAndStatus(String token, String status) {
+
+    public PageResponse<List<BookingResponse>> getAllBookingsByOwner(String token, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Long ownerId = userService.getUserIdFromToken(token);
+        PageResponse<List<BookingResponse>> pageResponse = new PageResponse<>();
+        Page<Booking> bookingPage = bookingRepository.findAllByOwnerId(ownerId, PageRequest.of(page, size));
+        List<BookingResponse> bookings = bookingPage.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        pageResponse.setData(bookings);
+        pageResponse.setTotalPages(bookingPage.getTotalPages());
+        pageResponse.setTotalElements(bookingPage.getTotalElements());
+        pageResponse.setCurrentPage(bookingPage.getNumber());
+        pageResponse.setCurrentElements(bookingPage.getNumberOfElements());
+        return pageResponse;
+    }
+
+    public PageResponse<List<BookingResponse>> getAllBookingsByBorrowerAndStatus(String token, String status, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
         Long borrowerId = userService.getUserIdFromToken(token);
-        List<Booking> bookings = bookingRepository.findAllByBorrowerIdAndStatus(borrowerId, BookingStatus.valueOf(status));
-        return bookings.stream().map(this::convertToResponse).collect(Collectors.toList());
+        PageResponse<List<BookingResponse>> pageResponse = new PageResponse<>();
+        Page<Booking> bookingPage = bookingRepository.findAllByBorrowerIdAndStatus(borrowerId, BookingStatus.valueOf(status), PageRequest.of(page, size));
+        List<BookingResponse> bookings = bookingPage.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        pageResponse.setData(bookings);
+        pageResponse.setTotalPages(bookingPage.getTotalPages());
+        pageResponse.setTotalElements(bookingPage.getTotalElements());
+        pageResponse.setCurrentPage(bookingPage.getNumber());
+        pageResponse.setCurrentElements(bookingPage.getNumberOfElements());
+        return pageResponse;
     }
 
-
-
+    public PageResponse<List<BookingResponse>> getAllBookingsByBorrower(String token, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Long borrowerId = userService.getUserIdFromToken(token);
+        PageResponse<List<BookingResponse>> pageResponse = new PageResponse<>();
+        Page<Booking> bookingPage = bookingRepository.findAllByBorrowerId(borrowerId, PageRequest.of(page, size));
+        List<BookingResponse> bookings = bookingPage.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        pageResponse.setData(bookings);
+        pageResponse.setTotalPages(bookingPage.getTotalPages());
+        pageResponse.setTotalElements(bookingPage.getTotalElements());
+        pageResponse.setCurrentPage(bookingPage.getNumber());
+        pageResponse.setCurrentElements(bookingPage.getNumberOfElements());
+        return pageResponse;
+    }
 }

@@ -3,6 +3,7 @@ package com.unishare.backend.controller;
 import com.unishare.backend.DTO.SpecialResponse.ApiResponse;
 import com.unishare.backend.DTO.Request.BookingRequest;
 import com.unishare.backend.DTO.Response.BookingResponse;
+import com.unishare.backend.DTO.SpecialResponse.PageResponse;
 import com.unishare.backend.service.BookingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,24 +24,18 @@ public class BookingController {
     }
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookings() {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookings();
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookings(page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
         }
     }
 
-    @GetMapping("/self")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookingsByBorrower(@RequestHeader("Authorization") String token) {
-        try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrower(token);
-            return ResponseEntity.ok(new ApiResponse<>(bookings, null));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
-        }
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<BookingResponse>> getBookingById(@PathVariable Long id) {
@@ -123,9 +118,12 @@ public class BookingController {
     }
 
     @GetMapping("owner/pending")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllPendingBookingsByOwner(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllPendingBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "PENDING");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "PENDING", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -133,9 +131,12 @@ public class BookingController {
     }
 
     @GetMapping("owner/accepted")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllAcceptedBookingsByOwner(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllAcceptedBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "ACCEPTED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "ACCEPTED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -143,9 +144,12 @@ public class BookingController {
     }
 
     @GetMapping("owner/lent")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllLentBookingsByOwner(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllLentBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "LENT");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "LENT", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -153,9 +157,12 @@ public class BookingController {
     }
 
     @GetMapping("owner/completed")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllCompletedBookingsByOwner(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllCompletedBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "COMPLETED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "COMPLETED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -163,9 +170,12 @@ public class BookingController {
     }
 
     @GetMapping("owner/rejected")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllRejectedBookingsByOwner(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllRejectedBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "REJECTED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "REJECTED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -173,19 +183,39 @@ public class BookingController {
     }
 
     @GetMapping("owner/cancelled")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllCancelledBookingsByOwner(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllCancelledBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "CANCELLED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwnerAndStatus(token, "CANCELLED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
         }
     }
 
-    @GetMapping("borrower/pending")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllPendingBookingsByBorrower(@RequestHeader("Authorization") String token) {
+    @GetMapping("owner/all")
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllBookingsByOwner(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "PENDING");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByOwner(token, page, size);
+            return ResponseEntity.ok(new ApiResponse<>(bookings, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
+        }
+
+    }
+
+    @GetMapping("borrower/pending")
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllPendingBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
+        try {
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "PENDING", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -193,9 +223,12 @@ public class BookingController {
     }
 
     @GetMapping("borrower/accepted")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllAcceptedBookingsByBorrower(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllAcceptedBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "ACCEPTED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "ACCEPTED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -203,9 +236,12 @@ public class BookingController {
     }
 
     @GetMapping("borrower/lent")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllLentBookingsByBorrower(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllLentBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "LENT");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "LENT", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -213,9 +249,12 @@ public class BookingController {
     }
 
     @GetMapping("borrower/completed")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllCompletedBookingsByBorrower(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllCompletedBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "COMPLETED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "COMPLETED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -223,9 +262,12 @@ public class BookingController {
     }
 
     @GetMapping("borrower/rejected")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllRejectedBookingsByBorrower(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllRejectedBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "REJECTED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "REJECTED", page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -233,9 +275,25 @@ public class BookingController {
     }
 
     @GetMapping("borrower/cancelled")
-    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllCancelledBookingsByBorrower(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllCancelledBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
         try {
-            List<BookingResponse> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "CANCELLED");
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrowerAndStatus(token, "CANCELLED", page, size);
+            return ResponseEntity.ok(new ApiResponse<>(bookings, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("borrower/all")
+    public ResponseEntity<ApiResponse<PageResponse<List<BookingResponse>>>> getAllBookingsByBorrower(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size) {
+        try {
+            PageResponse<List<BookingResponse>> bookings = bookingsService.getAllBookingsByBorrower(token, page, size);
             return ResponseEntity.ok(new ApiResponse<>(bookings, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
