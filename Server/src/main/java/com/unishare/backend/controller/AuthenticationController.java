@@ -130,5 +130,13 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
         }
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<ApiResponse<String>> test(
+            @RequestHeader("Authorization") String token
+    ) {
+
+        return ResponseEntity.ok(new ApiResponse<>("Test is successful.", null));
+    }
 }
 

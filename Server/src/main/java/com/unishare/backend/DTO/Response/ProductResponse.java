@@ -26,7 +26,7 @@ public class ProductResponse implements Serializable {
     private Double rating;
     private Integer ratingCount;
 
-    private Long ownerId;
-    private Long categoryId;
+    private UserResponse owner;
+    private CategoryResponse category;
     private List<Long> bookingIds = new ArrayList<>();
 }

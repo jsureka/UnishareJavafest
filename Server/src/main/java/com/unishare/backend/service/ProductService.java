@@ -1,6 +1,8 @@
 package com.unishare.backend.service;
 
+import com.unishare.backend.DTO.Request.CategoryRequest;
 import com.unishare.backend.DTO.Request.ProductRequest;
+import com.unishare.backend.DTO.Response.CategoryResponse;
 import com.unishare.backend.DTO.Response.ProductResponse;
 import com.unishare.backend.DTO.SpecialResponse.PageResponse;
 import com.unishare.backend.exceptionHandlers.CategoryNotFoundException;
@@ -32,6 +34,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
     private final CloudinaryImageService cloudinaryImageService;
     private final UserService userService;
     private final BookingRepository bookingRepository;
@@ -123,8 +126,8 @@ public class ProductService {
         response.setBasePrice(product.getBasePrice());
         response.setMarketPrice(product.getMarketPrice());
         response.setStatus(product.getStatus());
-        response.setOwnerId(product.getOwner().getId());
-        response.setCategoryId(product.getCategory().getId());
+        response.setOwner(userService.userResponseForOthers(product.getOwner()));
+        response.setCategory(categoryService.makeCategoryResponse(product.getCategory()));
         response.setBookingIds(bookingIds);
         response.setImage1(product.getImage1());
         response.setImage2(product.getImage2());

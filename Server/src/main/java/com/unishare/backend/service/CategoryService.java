@@ -34,12 +34,9 @@ public class CategoryService {
         Page<Category> categoryPage = categoryRepository.getCategoriesPage(PageRequest.of(page, size));
 
         PageResponse<List<CategoryResponse>> pageResponse = new PageResponse<>();
-        //List<CategoryResponse> categories = categoryPage.stream()
-                //.map(category -> new CategoryResponse(category.getId(), category.getCategoryName(), category.getDescription()))
-               // .collect(Collectors.toList());
 
         List<CategoryResponse> categories = categoryPage.stream()
-                .map(category -> new CategoryResponse(category.getId(), category.getCategoryName(), category.getDescription()))
+                .map(category -> makeCategoryResponse(category))
                 .collect(Collectors.toList());
 
         pageResponse.setData(categories);
@@ -54,7 +51,7 @@ public class CategoryService {
     public CategoryResponse getCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
-        return new CategoryResponse(category.getId(), category.getCategoryName(), category.getDescription());
+        return makeCategoryResponse(category);
     }
 
     @CacheEvict(value = {"category-all", "category-#id"}, allEntries = true)
@@ -64,7 +61,7 @@ public class CategoryService {
         newCategory.setDescription(category.getDescription());
 
         newCategory = categoryRepository.save(newCategory);
-        return new CategoryResponse(newCategory.getId(), newCategory.getCategoryName(), newCategory.getDescription());
+        return makeCategoryResponse(newCategory);
     }
 
     @CacheEvict(value = {"category-#id", "category-all"}, allEntries = true)
@@ -76,7 +73,7 @@ public class CategoryService {
         category.setDescription(updatedCategory.getDescription());
 
         category = categoryRepository.save(category);
-        return new CategoryResponse(category.getId(), category.getCategoryName(), category.getDescription());
+        return makeCategoryResponse(category);
     }
 
     @CacheEvict(value = {"category-#id", "category-all"}, allEntries = true)
@@ -85,5 +82,13 @@ public class CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
 
         categoryRepository.delete(category);
+    }
+
+    public CategoryResponse makeCategoryResponse(Category category) {
+        return new CategoryResponse(
+                category.getId(),
+                category.getCategoryName(),
+                category.getDescription()
+        );
     }
 }

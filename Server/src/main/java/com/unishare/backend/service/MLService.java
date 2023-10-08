@@ -83,4 +83,28 @@ public class MLService {
             throw new ErrorMessageException("Face comparison is going wrong.");
         }
     }
+
+    public String objectDetection(String imageUrl) {
+        OkHttpClient client = new OkHttpClient();
+
+        MediaType mediaType = MediaType.parse("application/json");
+        okhttp3.RequestBody body = okhttp3.RequestBody.create("{\"providers\":\"amazon\",\"file_url\":\"" + imageUrl + "\"}", mediaType);
+        Request request = new Request.Builder()
+                .url("https://api.edenai.run/v2/image/object_detection")
+                .post(body)
+                .addHeader("accept", "application/json")
+                .addHeader("content-type", "application/json")
+                .addHeader("authorization", "Bearer " + ProductionAccessKey)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            assert response.body() != null;
+            String responseBody = response.body().string();
+            System.out.println(responseBody);
+            return responseBody;
+
+        } catch (Exception e) {
+            throw new ErrorMessageException("Object detection is going wrong.");
+        }
+    }
 }
