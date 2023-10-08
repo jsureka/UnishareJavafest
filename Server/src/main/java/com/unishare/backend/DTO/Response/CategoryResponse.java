@@ -13,5 +13,6 @@ public class CategoryResponse implements Serializable {
     private Long id;
     private String categoryName;
     private String description;
+    private String imageUrl;
 }
 

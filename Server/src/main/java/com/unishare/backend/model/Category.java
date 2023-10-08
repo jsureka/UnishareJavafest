@@ -20,8 +20,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 1000)
     private String categoryName;
     private String description;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "category")
     private List<Product> products = new ArrayList<>();

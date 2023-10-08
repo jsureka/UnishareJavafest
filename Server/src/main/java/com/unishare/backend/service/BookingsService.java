@@ -61,7 +61,7 @@ public class BookingsService {
         throw new RuntimeException("Booking not found with ID: " + id);
     }
 
-    public Product getProductById(Long id) {
+    private Product getProductById(Long id) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             return productOptional.get();
@@ -77,14 +77,16 @@ public class BookingsService {
             throw new ErrorMessageException("You are not allowed to book products.");
         }
 
-        ProductResponse productResponse = productService.getProductById(bookingRequest.getProductId());
-        Product product = new Product();
-        product.setId(productResponse.getProductId());
-        product.setName(productResponse.getName());
-        product.setDescription(productResponse.getDescription());
-        product.setBasePrice(productResponse.getBasePrice());
-        product.setStatus(productResponse.getStatus());
-        product.getOwner().setId(productResponse.getOwner().getId());
+//        ProductResponse productResponse = productService.getProductById(bookingRequest.getProductId());
+//        Product product = new Product();
+//        product.setId(productResponse.getProductId());
+//        product.setName(productResponse.getName());
+//        product.setDescription(productResponse.getDescription());
+//        product.setBasePrice(productResponse.getBasePrice());
+//        product.setStatus(productResponse.getStatus());
+//        product.setOwner(productResponse.getOwner());
+
+        Product product = getProductById(bookingRequest.getProductId());
 
         User borrower = userRepository.findById(borrowerId)
                 .orElseThrow(() -> new ErrorMessageException("User not found with ID: " + borrowerId));

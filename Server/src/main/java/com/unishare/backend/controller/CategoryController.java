@@ -9,6 +9,7 @@ import com.unishare.backend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -46,11 +47,25 @@ public class CategoryController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(@RequestBody CategoryRequest category) {
         try {
             CategoryResponse createdCategory = categoryService.createCategory(category);
             return ResponseEntity.ok(new ApiResponse<>(createdCategory, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<String>> createCategoryWithImage(
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description
+    ) {
+        try {
+            categoryService.createCategoryWithImage(image, name, description);
+            return ResponseEntity.ok(new ApiResponse<>("Successfully created", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
         }
