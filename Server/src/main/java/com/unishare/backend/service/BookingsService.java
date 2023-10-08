@@ -84,8 +84,7 @@ public class BookingsService {
         product.setDescription(productResponse.getDescription());
         product.setBasePrice(productResponse.getBasePrice());
         product.setStatus(productResponse.getStatus());
-        product.setOwner(new User());
-        product.getOwner().setId(productResponse.getOwnerId());
+        product.getOwner().setId(productResponse.getOwner().getId());
 
         User borrower = userRepository.findById(borrowerId)
                 .orElseThrow(() -> new ErrorMessageException("User not found with ID: " + borrowerId));

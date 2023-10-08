@@ -172,5 +172,15 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // Add more service methods here as needed
+    public UserResponse userResponseForOthers(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setFullName(user.getFullName());
+        userResponse.setLat(user.getLat());
+        userResponse.setLng(user.getLng());
+        userResponse.setEmailVerified(user.getIsEmailVerified());
+        userResponse.setVerified(user.getIsVerified());
+        userResponse.setBlocked(user.getIsBlocked());
+
+        return userResponse;
+    }
 }

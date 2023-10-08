@@ -26,6 +26,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.io.IOException;
 import java.util.Optional;
 
@@ -276,14 +280,7 @@ public class AuthenticationService {
         mailSendingService.sendOTPMail(email, OTP);
     }
 
-    public String verifyMe(String token) {
-        User user = this.userRepository.findByEmail(jwtService.extractEmailFromBearerToken(token))
-                .orElseThrow(() -> new ErrorMessageException("Ops, Invalid email address."));
-
-        if (user.getIsVerified()) {
-            return "Email is already verified.";
-        }
-
+    private String universityVerificationByLogo(User user) {
         try {
             Optional<University> university = universityRepository.findById(user.getUniversity().getId());
             if (university.isEmpty()) {
@@ -316,12 +313,22 @@ public class AuthenticationService {
             if (!universityMatched) {
                 return "ID card is not authorized.";
             }
+            return "OK";
+        } catch (Exception e) {
+            throw new ErrorMessageException("Sorry, Something went wrong.");
+        }
+    }
 
+    private String faceVerification(User user) {
+        try {
+            String idCardUrl = user.getIdCard();
             String profilePictureUrl = user.getProfilePicture();
             String faceResponse = mlService.getFaceCompare(idCardUrl, profilePictureUrl);
+
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode faceNode = objectMapper.readTree(faceResponse);
 
-            itemsNode = faceNode
+            JsonNode itemsNode = faceNode
                     .get("facepp")
                     .get("items");
 
@@ -336,6 +343,69 @@ public class AuthenticationService {
             if (maxConfidence < .70) {
                 return "Sorry, Id card face and profile picture face didn't match.";
             }
+            return "OK";
+        } catch (Exception e) {
+            throw new ErrorMessageException("Sorry, Something went wrong.");
+        }
+    }
+
+    private String[] getLabels(String jsonResponse) {
+        JsonObject jsonObject = new Gson().fromJson(jsonResponse, JsonObject.class);
+
+        JsonArray items = jsonObject.getAsJsonObject("amazon").getAsJsonArray("items");
+        String[] labels = new String[items.size()];
+        for (int i = 0; i < items.size(); i++) {
+            labels[i] = items.get(i).getAsJsonObject().get("label").getAsString();
+        }
+
+        for (String label : labels) {
+            System.out.println(label);
+        }
+
+        return labels;
+    }
+
+    private String idCardVerificationByObjectDetection(User user) {
+        try {
+            String idCardUrl = user.getIdCard();
+            String objectDetectionResponse = mlService.objectDetection(idCardUrl);
+            String[] labels = getLabels(objectDetectionResponse);
+
+            for (String label : labels) {
+                if (label.toLowerCase().contains("id cards")) {
+                    return "OK";
+                }
+            }
+
+            return "Please, Upload a valid ID cards.";
+        } catch (Exception e) {
+            throw new ErrorMessageException("Sorry, Something went wrong.");
+        }
+    }
+
+    public String verifyMe(String token) {
+        User user = this.userRepository.findByEmail(jwtService.extractEmailFromBearerToken(token))
+                .orElseThrow(() -> new ErrorMessageException("Ops, Invalid email address."));
+
+        if (user.getIsVerified()) {
+            return "Account is already verified.";
+        }
+
+        try {
+//            String universityVerification = universityVerificationByLogo(user);
+//            if (!universityVerification.equals("OK")) {
+//                return universityVerification;
+//            }
+
+            String idCardVerification = idCardVerificationByObjectDetection(user);
+            if (!idCardVerification.equals("OK")) {
+                return idCardVerification;
+            }
+
+            String faceVerification = faceVerification(user);
+            if (!faceVerification.equals("OK")) {
+                return faceVerification;
+            }
 
             user.setIsVerified(true);
             userRepository.save(user);
@@ -345,4 +415,5 @@ public class AuthenticationService {
             throw new ErrorMessageException("Sorry, Something went wrong.");
         }
     }
+
 }
