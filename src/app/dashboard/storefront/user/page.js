@@ -3,18 +3,19 @@ import ImageUpload from "@/components/GlobalComponents/ImageUpload/ImageUpload";
 import AuthService from "@/lib/services/authService";
 import UniversityService from "@/lib/services/universityService";
 import UserService from "@/lib/services/userService";
-import userSlice from "@/store/Slices/userSlice";
+import userSlice, { setUser } from "@/store/Slices/userSlice";
 import { CogIcon, HomeIcon, UserIcon } from "@heroicons/react/24/outline";
 import { Button, Step, Stepper, Typography } from "@material-tailwind/react";
 import GoogleMapReact from "google-map-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const Page = () => {
   const user = useSelector((state) => state.user.currentUser);
   const router = useRouter();
+  const dispatch = useDispatch();
   const [activeStep, setActiveStep] = useState(0);
   const [userLocation, setUserLocation] = useState(null);
   const [univserities, setUniversities] = useState([]);
@@ -83,17 +84,15 @@ const Page = () => {
     };
     AuthService.verifyEmail(data).then((res) => {
       toast.success("Email verified successfully");
+      dispatch(setUser(...user, { emailVerified: true }));
     });
   };
 
   const autoVerify = () => {
-    UserService.autoVerify()
-      .then((res) => {
-        toast.success(res);
-      })
-      .catch((err) => {
-        toast.error(err.message);
-      });
+    UserService.autoVerify().then((res) => {
+      toast.success(res);
+      dispatch(setUser(...user, { verified: true }));
+    });
   };
 
   useEffect(() => {

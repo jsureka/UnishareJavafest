@@ -70,17 +70,17 @@ const Page = () => {
             };
           })
         }
-        actions={
-          [
-            // {
-            //   name: "Delete",
-            //   type: "delete",
-            //   onClick: (e, id) => {
-            //     handleRestrict(e, id);
-            //   },
-            // },
-          ]
-        }
+        // actions={
+        //   [
+        //     // {
+        //     //   name: "Delete",
+        //     //   type: "delete",
+        //     //   onClick: (e, id) => {
+        //     //     handleRestrict(e, id);
+        //     //   },
+        //     // },
+        //   ]
+        // }
       />
     </>
   );

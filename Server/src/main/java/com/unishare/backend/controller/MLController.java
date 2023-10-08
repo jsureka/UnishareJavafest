@@ -46,7 +46,7 @@ public class MLController {
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer " + SandboxAccessKey)
+                .addHeader("authorization", "Bearer " + ProductionAccessKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -75,7 +75,7 @@ public class MLController {
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer " + SandboxAccessKey)
+                .addHeader("authorization", "Bearer " + ProductionAccessKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -104,7 +104,7 @@ public class MLController {
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer " + SandboxAccessKey)
+                .addHeader("authorization", "Bearer " + ProductionAccessKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -132,7 +132,7 @@ public class MLController {
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer " + SandboxAccessKey)
+                .addHeader("authorization", "Bearer " + ProductionAccessKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -157,7 +157,7 @@ public class MLController {
                 .post(body)
                 .addHeader("accept", "application/json")
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer " + SandboxAccessKey)
+                .addHeader("authorization", "Bearer " + ProductionAccessKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

@@ -2,6 +2,7 @@
 import BookingService from "@/lib/services/bookingService";
 import ProductService from "@/lib/services/productService";
 import UserService from "@/lib/services/userService";
+import { LinearProgress } from "@mui/material";
 import { addDays } from "date-fns";
 import GoogleMapReact from "google-map-react";
 import { useParams } from "next/navigation";
@@ -10,20 +11,18 @@ import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import ReactStars from "react-rating-stars-component";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const Page = () => {
   const { product_id } = useParams();
-  const [product, setProduct] = useState({});
-  const [previewImg, setPreviewImg] = useState(
-    "https://tailwindui.com/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg"
-  );
+  const [product, setProduct] = useState(null);
+  const [previewImg, setPreviewImg] = useState(null);
   const [owner, setOwner] = useState({});
-  const user = useSelector((state) => state.user.currentUser);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    setLoading(true);
     ProductService.getOne(product_id).then((res) => {
+      setLoading(false);
       setProduct(res);
       setPreviewImg(res.image1);
       res.image1 && setThumbnails([res.image1]);
@@ -61,17 +60,22 @@ const Page = () => {
       rentFrom: selectionRange.startDate,
       rentTo: selectionRange.endDate,
     };
+    setLoading(true);
     BookingService.createBooking(data)
       .then((res) => {
+        setLoading(false);
         toast.success("Booking request sent successfully");
       })
       .catch((err) => {
-        console.log(err.response);
+        setLoading(false);
+        toast.error(err.message);
       });
   };
 
   return (
     <>
+      {/* progress bar loader */}
+      {loading && <LinearProgress />}
       {product && (
         <main className="product-container lg:flex lg:items-center lg:gap-x-12 xl:gap-x-24 lg:px-20 xl:px-40 lg:py-12 lg:m-auto lg:mt-2 lg:max-w-8xl">
           <h1 className="absolute w-1 h-1 overflow-hidden p-0 -m-1">
@@ -125,22 +129,13 @@ const Page = () => {
                     }
                   }
                   yesIWantToUseGoogleMapApiInternals={true}
-                  onGoogleApiLoaded={({ map, maps }) => {
-                    new maps.Circle({
-                      strokeColor: "#FF0000",
-                      strokeOpacity: 0.8,
-                      strokeWeight: 2,
-                      fillColor: "#FF0000",
-                      fillOpacity: 0.35,
-                      map,
-                      center: {
-                        lat: owner.lat,
-                        lng: owner.lng,
-                      },
-                      radius: 2000,
-                    });
-                  }}
-                ></GoogleMapReact>
+                >
+                  <div
+                    lat={owner.lat}
+                    lng={owner.lng}
+                    className="w-32 h-32 bg-red-500 rounded-full border-2 border-red-500  bg-opacity-50"
+                  ></div>
+                </GoogleMapReact>
               </div>
             </>
           </div>
@@ -157,8 +152,8 @@ const Page = () => {
               </p>
               {/* market value */}
               <div className="market-value flex items-center justify-between lg:flex-col lg:items-start mb-6">
-                <div className=" text-lg text-gray-500">
-                  Market Value Tk. {product.basePrice}
+                <div className=" text-lg text-gray-700 font-semibold ">
+                  Market Value Tk. {product.marketPrice}
                 </div>
               </div>
               {/* Rating stars*/}
@@ -201,13 +196,33 @@ const Page = () => {
                   />
                 </div>
               </div>
-              <button
-                onClick={handleRequest}
-                className="cart w-full h-10 dark:bg-orange-500 rounded-md lg:rounded-lg mb-2 shadow-orange-shadow shadow-2xl text-white font-semibold flex items-center justify-center lg:w-2/5 hover:opacity-60 mt-3 md:mx-3"
-              >
-                <i className="cursor-pointer text-white text-xl leading-0 pr-3"></i>
-                Send Booking Request
-              </button>
+              {/* Estimated Rent Total and Send Reuqest button */}
+              <div className="flex  mb-6">
+                <div>
+                  <div className="text-lg text-gray-500">
+                    Estimated Rent Total
+                  </div>
+                  <div className="amount font-bold">
+                    <div className="price text-3xl">
+                      Tk.{" "}
+                      {product.perDayPrice *
+                        Math.ceil(
+                          (selectionRange.endDate - selectionRange.startDate) /
+                            (1000 * 3600 * 24)
+                        )}
+                    </div>
+                  </div>
+                </div>
+                {/* button */}
+                <div className="m-5">
+                  <button
+                    onClick={handleRequest}
+                    className="bg-orange-500 text-white font-bold py-2 px-8 ml-4" // Add ml-4 to add left margin
+                  >
+                    Send Request
+                  </button>
+                </div>
+              </div>
             </>
           </section>
         </main>

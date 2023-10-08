@@ -1,4 +1,5 @@
 "use client";
+import Pagination from "@/components/GlobalComponents/Pagination";
 import BookingService from "@/lib/services/bookingService";
 import ProductService from "@/lib/services/productService";
 import UserService from "@/lib/services/userService";
@@ -15,20 +16,103 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 export default function page() {
-  const tabs = [
-    { name: "Ongoing", href: "#", current: true, type: "ACCEPTED" },
-    { name: "Completed", href: "#", current: false, type: "COMPLETED" },
-    { name: "All", href: "#", current: false, type: "ALL" },
-  ];
-  const [bookings, setBookings] = useState([]);
+  const [tabs, setTabs] = useState([
+    { name: "Ongoing", href: "#", current: true, type: "accepted" },
+    { name: "Completed", href: "#", current: false, type: "completed" },
+    { name: "Rejected", href: "#", current: false, type: "rejected" },
+  ]);
+  const [bookings, setBookings] = useState(null);
   const user = useSelector((state) => state.user.currentUser);
   const [ownerDetails, setOwnerDetails] = useState({});
+  const [currentTab, setCurrenttab] = useState("accepted");
   const [ratingForm, setRatingForm] = useState({
     rating: 0,
     comment: "",
     bookingId: "",
     reviewerId: "",
   });
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    postsPerPage: 5,
+    currentElements: 0,
+    totalPosts: 0,
+  });
+
+  const paginateBack = () => {
+    if (pagination.currentPage <= 0) return;
+    else
+      BookingService.borrowerRentals(
+        pagination.currentPage - 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          res.data.map((booking) => {
+            ProductService.getOne(booking.productResponse.productId).then(
+              (res) => {
+                booking.image = res.image1;
+                booking.productResponse = res;
+              }
+            );
+
+            booking.rentFrom = booking.rentFrom.slice(0, 10);
+            booking.rentTo = booking.rentTo.slice(0, 10);
+            booking.productName = booking.productResponse.name;
+            booking.description = booking.productResponse.description;
+            booking.borrowerName = booking.borrower.fullName;
+            booking.address = booking.borrower.address;
+          });
+          setBookings(res.data);
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          toast.error(err.message);
+        });
+  };
+
+  const paginateFront = () => {
+    const totalPages = Math.ceil(
+      pagination.totalPosts / pagination.postsPerPage
+    );
+    if (pagination.currentPage >= totalPages - 1) return;
+    else
+      BookingService.borrowerRentals(
+        pagination.currentPage + 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          res.data.map((booking) => {
+            ProductService.getOne(booking.productResponse.productId).then(
+              (res) => {
+                booking.image = res.image1;
+                booking.productResponse = res;
+              }
+            );
+
+            booking.rentFrom = booking.rentFrom.slice(0, 10);
+            booking.rentTo = booking.rentTo.slice(0, 10);
+            booking.productName = booking.productResponse.name;
+            booking.description = booking.productResponse.description;
+            booking.borrowerName = booking.borrower.fullName;
+            booking.address = booking.borrower.address;
+          });
+          setBookings(res.data);
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          toast.error(err.message);
+        });
+  };
+
   const handleOwnerDetails = (id) => {
     UserService.getOne(id)
       .then((res) => {
@@ -36,7 +120,7 @@ export default function page() {
         setOwnerDetails(res);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err.message);
       });
   };
   const [showModal, setShowModal] = useState(false);
@@ -45,10 +129,11 @@ export default function page() {
     BookingService.markReceived(id)
       .then((res) => {
         toast.success("Marked as received");
-        getBookings("ACCEPTED");
+        getBookings("accepted");
+        setCurrenttab("accepted");
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err.message);
       });
   };
 
@@ -83,9 +168,13 @@ export default function page() {
   };
 
   const getBookings = (tabtype) => {
-    BookingService.getMyBookings()
+    BookingService.borrowerRentals(
+      tabtype,
+      pagination.currentPage,
+      pagination.postsPerPage
+    )
       .then((res) => {
-        res.map((booking) => {
+        res.data.map((booking) => {
           ProductService.getOne(booking.productResponse.productId).then(
             (res) => {
               booking.image = res.image1;
@@ -100,30 +189,15 @@ export default function page() {
           booking.borrowerName = booking.borrower.fullName;
           booking.address = booking.borrower.address;
         });
-        if (tabtype === "ACCEPTED") {
-          res = res.filter(
-            (booking) =>
-              booking.status === "ACCEPTED" || booking.status === "LENT"
-          );
-        } else if (tabtype === "COMPLETED") {
-          res = res.filter((booking) => booking.status === "COMPLETED");
-        } else {
-          res = res.filter(
-            (booking) =>
-              booking.status !== "PENDING" &&
-              booking.status !== "REJECTED" &&
-              booking.status !== "CANCELLED"
-          );
-        }
-        setBookings(res);
+        setBookings(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err.message);
       });
   };
   useEffect(() => {
-    getBookings("ACCEPTED");
-  }, []);
+    getBookings(currentTab);
+  }, [currentTab]);
 
   return (
     <div className="bg-white">
@@ -225,22 +299,7 @@ export default function page() {
         <div className="mt-12 sm:mt-16">
           <div className="mx-auto max-w-7xl sm:px-2 lg:px-8">
             <div className="mx-auto max-w-2xl px-4 lg:max-w-4xl lg:px-0">
-              <div className="sm:hidden">
-                <label htmlFor="current-tab" className="sr-only">
-                  Select a tab
-                </label>
-                <select
-                  id="current-tab"
-                  name="current-tab"
-                  className="block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
-                  defaultValue={tabs.find((tab) => tab.current).name}
-                >
-                  {tabs.map((tab) => (
-                    <option key={tab.name}>{tab.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="hidden sm:block">
+              <div className=" sm:block">
                 <nav
                   className="relative z-0 rounded-lg shadow flex divide-x divide-gray-200"
                   aria-label="Tabs"
@@ -248,6 +307,7 @@ export default function page() {
                   {tabs.map((tab, tabIdx) => (
                     <button
                       onClick={() => {
+                        setCurrenttab(tab.type);
                         getBookings(tab.type);
                         tab.current = true;
                         tabs.forEach((t) => {
@@ -256,24 +316,18 @@ export default function page() {
                           }
                         });
                       }}
-                      aria-current={tab.current ? "page" : undefined}
+                      key={tab.name}
                       className={classNames(
                         tab.current
-                          ? "text-gray-900"
+                          ? "text-red-900"
                           : "text-gray-500 hover:text-gray-700",
                         tabIdx === 0 ? "rounded-l-lg" : "",
                         tabIdx === tabs.length - 1 ? "rounded-r-lg" : "",
-                        "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-6 text-sm font-medium text-center hover:bg-gray-50 focus:z-10"
+                        "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10"
                       )}
+                      aria-current={tab.current ? "page" : undefined}
                     >
                       <span>{tab.name}</span>
-                      <span
-                        aria-hidden="true"
-                        className={classNames(
-                          tab.current ? "" : "bg-transparent",
-                          "absolute inset-x-0 bottom-0 h-0.5"
-                        )}
-                      />
                     </button>
                   ))}
                 </nav>
@@ -289,6 +343,19 @@ export default function page() {
                 {/* Products */}
                 <h4 className="sr-only">Items</h4>
                 <ul role="list" className="divide-y divide-gray-200">
+                  {!bookings && (
+                    <div className="flex justify-center items-center h-96">
+                      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-600 m-4"></div>
+                      <h1 className="text-4xl text-gray-400">Loading...</h1>
+                    </div>
+                  )}
+                  {bookings && bookings.length === 0 && (
+                    <div className="flex justify-center items-center h-96">
+                      <h1 className="text-4xl text-gray-400">
+                        No bookings found
+                      </h1>
+                    </div>
+                  )}
                   {bookings &&
                     bookings.map(
                       (booking) =>
@@ -540,6 +607,21 @@ export default function page() {
                         )
                     )}
                 </ul>
+                {bookings && (
+                  <Pagination
+                    startIndex={
+                      pagination.currentPage * pagination.postsPerPage + 1
+                    }
+                    endIndex={
+                      pagination.currentPage * pagination.postsPerPage +
+                      pagination.currentElements
+                    }
+                    postsPerPage={pagination.postsPerPage}
+                    totalPosts={pagination.totalPosts}
+                    paginateBack={paginateBack}
+                    paginateFront={paginateFront}
+                  />
+                )}
               </div>
             </div>
           </div>

@@ -403,6 +403,15 @@ export default function SignUp() {
                 <Button type="submit">Submit</Button>
               </div>
             </form>
+            <p className="text-center mt-5 font-light text-gray-500 dark:text-gray-700">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-blue-600 hover:underline dark:text-primary-800"
+              >
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </section>

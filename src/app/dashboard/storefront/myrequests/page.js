@@ -1,11 +1,82 @@
 "use client";
+import Pagination from "@/components/GlobalComponents/Pagination";
 import BookingService from "@/lib/services/bookingService";
 import { Cancel } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function page() {
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    postsPerPage: 5,
+    currentElements: 0,
+    totalPosts: 0,
+  });
+
+  const paginateBack = () => {
+    if (pagination.currentPage <= 0) return;
+    else
+      BookingService.getMyBookings(
+        pagination.currentPage - 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          res.data.map((booking) => {
+            booking.rentFrom = booking.rentFrom.slice(0, 10);
+            booking.rentTo = booking.rentTo.slice(0, 10);
+            booking.productName = booking.productResponse.name;
+            booking.description = booking.productResponse.description;
+            booking.image = booking.productResponse.image;
+            booking.borrowerName = booking.borrower.fullName;
+            booking.address = booking.borrower.address;
+          });
+          setBookings(res.data);
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
+  const paginateFront = () => {
+    const totalPages = Math.ceil(
+      pagination.totalPosts / pagination.postsPerPage
+    );
+    if (pagination.currentPage >= totalPages - 1) return;
+    else
+      BookingService.getMyBookings(
+        pagination.currentPage + 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          res.data.map((booking) => {
+            booking.rentFrom = booking.rentFrom.slice(0, 10);
+            booking.rentTo = booking.rentTo.slice(0, 10);
+            booking.productName = booking.productResponse.name;
+            booking.description = booking.productResponse.description;
+            booking.image = booking.productResponse.image;
+            booking.borrowerName = booking.borrower.fullName;
+            booking.address = booking.borrower.address;
+          });
+          setBookings(res.data);
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
   const handleCancel = (id) => {
     BookingService.cancelBooking(id)
       .then((res) => {
@@ -16,10 +87,14 @@ export default function page() {
         console.log(err.response);
       });
   };
+
   const getBookings = () => {
-    BookingService.getMyBookings()
+    BookingService.getMyBookings(
+      pagination.currentPage,
+      pagination.postsPerPage
+    )
       .then((res) => {
-        res.map((booking) => {
+        res.data.map((booking) => {
           booking.rentFrom = booking.rentFrom.slice(0, 10);
           booking.rentTo = booking.rentTo.slice(0, 10);
           booking.productName = booking.productResponse.name;
@@ -28,10 +103,17 @@ export default function page() {
           booking.borrowerName = booking.borrower.fullName;
           booking.address = booking.borrower.address;
         });
-        setBookings(res);
+        setBookings(res.data);
+        setPagination({
+          ...pagination,
+          totalPosts: res.totalElements,
+          currentPage: res.currentPage,
+          currentElements: res.currentElements,
+        });
       })
       .catch((err) => {
         console.log(err);
+        toast.error("Something went wrong");
       });
   };
   useEffect(() => {
@@ -58,6 +140,19 @@ export default function page() {
                 {/* Products */}
                 <h4 className="sr-only">Items</h4>
                 <ul role="list" className="divide-y divide-gray-200">
+                  {!bookings && (
+                    <div className="flex justify-center items-center h-96">
+                      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-600 m-4"></div>
+                      <h1 className="text-4xl text-gray-400">Loading...</h1>
+                    </div>
+                  )}
+                  {bookings && bookings.length === 0 && (
+                    <div className="flex justify-center items-center h-96">
+                      <h1 className="text-4xl text-gray-400">
+                        No bookings found
+                      </h1>
+                    </div>
+                  )}
                   {bookings &&
                     bookings.map(
                       (booking) =>
@@ -129,6 +224,21 @@ export default function page() {
                     )}
                 </ul>
               </div>
+              {bookings && (
+                <Pagination
+                  startIndex={
+                    pagination.currentPage * pagination.postsPerPage + 1
+                  }
+                  endIndex={
+                    pagination.currentPage * pagination.postsPerPage +
+                    pagination.currentElements
+                  }
+                  postsPerPage={pagination.postsPerPage}
+                  totalPosts={pagination.totalPosts}
+                  paginateBack={paginateBack}
+                  paginateFront={paginateFront}
+                />
+              )}
             </div>
           </div>
         </div>

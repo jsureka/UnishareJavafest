@@ -6,12 +6,12 @@ import store from "../store";
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
 const RootLayout = ({ children }) => {
-  
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <title>Unishare</title>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkBNch66QwlX2bWun9ka43xSs2midkw18&libraries=places"></script>
       </head>
       <body>
         <Provider store={store}>{children}</Provider>

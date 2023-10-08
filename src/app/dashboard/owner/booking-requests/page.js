@@ -1,6 +1,7 @@
 "use client";
 
 import CommonTable from "@/components/GlobalComponents/CommonTable";
+import Pagination from "@/components/GlobalComponents/Pagination";
 import PageHeader from "@/components/OwnerComponents/PageHeader";
 import BookingService from "@/lib/services/bookingService";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,13 @@ import { toast } from "react-toastify";
 const Page = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    postsPerPage: 5,
+    currentElements: 0,
+    totalPosts: 0,
+  });
   const handleAccept = (id) => {
     BookingService.acceptBooking(id)
       .then((res) => {
@@ -33,27 +40,65 @@ const Page = () => {
       });
   };
 
-  const getBookings = () => {
-    BookingService.getAll()
-      .then((res) => {
-        res.map((booking) => {
-          booking.rentFrom = booking.rentFrom.slice(0, 10);
-          booking.rentTo = booking.rentTo.slice(0, 10);
-          booking.productName = booking.productResponse.name;
-          booking.image = booking.productResponse.image;
-          booking.borrowerName = booking.borrower.fullName;
-          booking.address = booking.borrower.address;
+  const paginateBack = () => {
+    if (pagination.currentPage <= 0) return;
+    else
+      BookingService.ownerPending(
+        pagination.currentPage - 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          setBookings(res.data);
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
         });
-        // choose only with pending status
-        res = res.filter((booking) => booking.status === "PENDING");
-        setBookings(res);
+  };
+
+  const paginateFront = () => {
+    const totalPages = Math.ceil(
+      pagination.totalPosts / pagination.postsPerPage
+    );
+    if (pagination.currentPage >= totalPages - 1) return;
+    else
+      BookingService.ownerPending(
+        pagination.currentPage + 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          setBookings(res.data);
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
+  useEffect(() => {
+    BookingService.ownerPending(pagination.currentPage, pagination.postsPerPage)
+      .then((res) => {
+        setBookings(res.data);
+        setPagination({
+          ...pagination,
+          totalPosts: res.totalElements,
+          currentPage: res.currentPage,
+          currentElements: res.currentElements,
+        });
       })
       .catch((err) => {
         console.log(err);
       });
-  };
-  useEffect(() => {
-    getBookings();
   }, []);
   return (
     <>
@@ -92,6 +137,17 @@ const Page = () => {
             },
           },
         ]}
+      />
+      <Pagination
+        startIndex={pagination.currentPage * pagination.postsPerPage + 1}
+        endIndex={
+          pagination.currentPage * pagination.postsPerPage +
+          pagination.currentElements
+        }
+        postsPerPage={pagination.postsPerPage}
+        totalPosts={pagination.totalPosts}
+        paginateBack={paginateBack}
+        paginateFront={paginateFront}
       />
     </>
   );

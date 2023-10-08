@@ -75,14 +75,6 @@ const Page = () => {
               UniversityService.delete(id)
                 .then((res) => {
                   toast.success("university deleted successfully");
-                  UniversityService.getAll()
-                    .then((e) => {
-                      dispatch(setUniversity(e));
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                      toast.error("Something went wrong");
-                    });
                 })
                 .catch((err) => {
                   console.log(err);

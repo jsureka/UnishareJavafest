@@ -19,6 +19,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [active, setActive] = useState("/");
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const user = useSelector((state) => state.user.currentUser);
   const navbarItems = [
     { name: "Home", key: "/", href: "/dashboard/storefront/home" },
     {
@@ -131,7 +132,42 @@ const Navbar = () => {
 
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
-                      {/* Owner Dashboard button, white background */}
+                      {user && !user.verified && !user.emailVerified && (
+                        <>
+                          <div className="flex items-center">
+                            <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-4">
+                              Not Verified
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      {user && user.emailVerified && !user.verified && (
+                        <>
+                          <div className="flex items-center">
+                            <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mr-4">
+                              Email Verified
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      {user && user.verified && !user.emailVerified && (
+                        <>
+                          <div className="flex items-center">
+                            <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mr-4">
+                              ID Verified
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      {user && user.verified && user.emailVerified && (
+                        <>
+                          <div className="flex items-center">
+                            <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-4">
+                              Verified
+                            </span>
+                          </div>
+                        </>
+                      )}
                       {isAuthenticated && (
                         <Link
                           href="/dashboard/owner"

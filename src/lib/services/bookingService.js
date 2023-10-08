@@ -19,8 +19,8 @@ const BookingService = {
   cancelBooking: (id) => {
     return api.putAsync(`/bookings/cancel/${id}`);
   },
-  getMyBookings: () => {
-    return api.getAsync(`/bookings/self`);
+  getMyBookings: (page, size) => {
+    return api.getAsync(`/bookings/borrower/pending?page=${page}&size=${size}`);
   },
   acceptBooking: (id) => {
     return api.putAsync(`/bookings/accept/${id}`);
@@ -36,6 +36,15 @@ const BookingService = {
   },
   addReview: (review) => {
     return api.postAsync(`/reviews`, review);
+  },
+  ownerPending: (page, size) => {
+    return api.getAsync(`/bookings/owner/pending?page=${page}&size=${size}`);
+  },
+  ownerRentals: (type, page, size) => {
+    return api.getAsync(`/bookings/owner/${type}?page=${page}&size=${size}`);
+  },
+  borrowerRentals: (type, page, size) => {
+    return api.getAsync(`/bookings/borrower/${type}?page=${page}&size=${size}`);
   },
 };
 
