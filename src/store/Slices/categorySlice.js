@@ -12,7 +12,6 @@ const categorySlice = createSlice({
   reducers: {
     // Action to set the user data
     setCategory: (state, action) => {
-      console.log(action);
       state.category = action.payload;
     },
 

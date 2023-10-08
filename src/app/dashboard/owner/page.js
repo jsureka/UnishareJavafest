@@ -108,7 +108,7 @@ const Page = () => {
                   </div>
                   <div className="ml-4">
                     <h4 className="text-title-md font-bold text-black">
-                      IC Card Verification
+                      ID Card Verification
                     </h4>
                     <span className="text-sm font-medium">
                       Verify your ID Card
