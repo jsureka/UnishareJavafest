@@ -19,6 +19,7 @@ public class Product {
     private Long id;
 
     private String name;
+    @Column(length = 1000)
     private String description;
     private Double marketPrice;
     private Double basePrice;
