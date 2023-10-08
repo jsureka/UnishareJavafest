@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Tooltip } from "@material-tailwind/react";
 import { ArrowCircleRightOutlined } from "@mui/icons-material";
+import { Drawer } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -111,8 +112,23 @@ const Navbar = () => {
                       <span className="sr-only">Open menu</span>
                       <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                     </button>
-
-                    {/* Search */}
+                    <Drawer
+                      anchor="left"
+                      open={mobileMenuOpen}
+                      onClose={() => setMobileMenuOpen(false)}
+                    >
+                      <div className="px-2 pt-2 pb-3 space-y-1">
+                        {navbarItems.map((page) => (
+                          <Link
+                            key={page.name}
+                            href={page.href}
+                            className="text-gray-800 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                          >
+                            {page.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </Drawer>
                   </div>
 
                   {/* Logo (lg-) */}

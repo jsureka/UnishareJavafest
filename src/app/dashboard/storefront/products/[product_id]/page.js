@@ -1,7 +1,7 @@
 "use client";
 import BookingService from "@/lib/services/bookingService";
 import ProductService from "@/lib/services/productService";
-import UserService from "@/lib/services/userService";
+import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { LinearProgress } from "@mui/material";
 import { addDays } from "date-fns";
 import GoogleMapReact from "google-map-react";
@@ -28,9 +28,7 @@ const Page = () => {
       res.image1 && setThumbnails([res.image1]);
       res.image2 && setThumbnails((thumbnails) => [...thumbnails, res.image2]);
       res.image3 && setThumbnails((thumbnails) => [...thumbnails, res.image3]);
-      UserService.getOne(res.ownerId).then((res) => {
-        setOwner(res);
-      });
+      setOwner(res.owner);
     });
   }, [product_id]);
 
@@ -142,7 +140,10 @@ const Page = () => {
           <section className="product-details container mx-auto px-6 pt-5 sm:pt-10 lg:pt-5 pb-20 lg:pb-5 lg:pr-0 lg:pl-7 xl:ml-1">
             <>
               <h2 className="company uppercase text-orange font-bold text-sm sm:text-md tracking-wider pb-3 sm:pb-5">
-                Owner {product.ownerId}
+                Owner : {owner.fullName}
+                {owner && owner.verified && owner.emailVerified && (
+                  <CheckBadgeIcon className="h-6 w-6 text-green-500 inline mx-3" />
+                )}
               </h2>
               <h3 className="product capitalize text-very-dark-blue font-bold text-3xl sm:text-4xl sm:leading-none pb-3">
                 {product.name}
@@ -156,6 +157,13 @@ const Page = () => {
                   Market Value Tk. {product.marketPrice}
                 </div>
               </div>
+              {/* Base price */}
+              <div className="base-price flex items-center justify-between lg:flex-col lg:items-start mb-6">
+                <div className=" text-lg text-red-700 font-semibold ">
+                  Base Price Tk. {product.basePrice}
+                </div>
+              </div>
+
               {/* Rating stars*/}
               <div className="rating flex items-center justify-between lg:flex-col lg:items-start mb-6">
                 <div className="text-lg text-gray-500">
@@ -205,11 +213,13 @@ const Page = () => {
                   <div className="amount font-bold">
                     <div className="price text-3xl">
                       Tk.{" "}
-                      {product.perDayPrice *
-                        Math.ceil(
-                          (selectionRange.endDate - selectionRange.startDate) /
-                            (1000 * 3600 * 24)
-                        )}
+                      {product.basePrice +
+                        product.perDayPrice *
+                          Math.ceil(
+                            (selectionRange.endDate -
+                              selectionRange.startDate) /
+                              (1000 * 3600 * 24)
+                          )}
                     </div>
                   </div>
                 </div>

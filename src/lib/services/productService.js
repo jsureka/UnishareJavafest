@@ -5,6 +5,10 @@ const ProductService = {
     return api.getAsync("/products");
   },
 
+  getAllByCategory: (category) => {
+    return api.getAsync(`/products/category/${category}`);
+  },
+
   create: (product) => {
     return api.postFormAsync("/products", product);
   },
@@ -21,8 +25,8 @@ const ProductService = {
     return api.deleteAsync(`/productss/${id}`);
   },
 
-  getByUser: (id) => {
-    return api.getAsync(`/products/owner/${id}`);
+  getByUser: (id, page, size) => {
+    return api.getAsync(`/products/owner/${id}?page=${page}&size=${size}`);
   },
   restrict: (id) => {
     return api.postAsync(`/products/restricted/${id}`);

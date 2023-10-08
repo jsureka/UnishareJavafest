@@ -44,10 +44,10 @@ const Search = ({ categories, onSearch, onCategoryChange }) => {
               value={selectedCategory}
               onChange={handleCategoryChange}
             >
-              <option value="All">All Categories</option>
+              <option value="0">All Categories</option>
               {categories &&
                 categories.map((category) => (
-                  <option key={category.id} value={category.categoryName}>
+                  <option key={category.id} value={category.id}>
                     {category.categoryName}
                   </option>
                 ))}

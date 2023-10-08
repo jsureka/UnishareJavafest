@@ -19,13 +19,26 @@ export default function page() {
     router.push(`/dashboard/storefront/products/${id}`);
   };
 
+  const handleCategoryChange = (category) => {
+    setProduct(null);
+    if (category === "0") {
+      ProductService.getAll().then((res) => {
+        dispatch(setProduct(res.data));
+      });
+      return;
+    }
+    ProductService.getAllByCategory(category).then((res) => {
+      dispatch(setProduct(res.data));
+    });
+  };
+
   useEffect(() => {
-    if (!products && user) {
+    if (!products) {
       ProductService.getAll().then((res) => {
         dispatch(setProduct(res.data));
       });
     }
-    if (!categories && user) {
+    if (!categories) {
       CategoryService.getAll().then((res) => {
         dispatch(setCategory(res.data));
       });
@@ -34,7 +47,7 @@ export default function page() {
 
   return (
     <div className="bg-white my-5">
-      <Search categories={categories} />
+      <Search categories={categories} onCategoryChange={handleCategoryChange} />
       {!products && (
         <div className="flex justify-center items-center h-96">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-600 m-4"></div>
