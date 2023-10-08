@@ -26,7 +26,8 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2147483647") int size) {
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
             PageResponse<List<ProductResponse>> productResponses = productService.getAllProducts(page, size);
             return ResponseEntity.ok(new ApiResponse<>(productResponses, null));
@@ -81,9 +82,13 @@ public class ProductController {
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategoryId(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByCategoryId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByCategoryId(id);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByCategoryId(id, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -91,9 +96,13 @@ public class ProductController {
     }
 
     @GetMapping("/owner/{id}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByOwnerId(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByOwnerId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByOwnerId(id);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByOwnerId(id, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -101,9 +110,13 @@ public class ProductController {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByStatus(@PathVariable String status) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByStatus(
+            @PathVariable String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByStatus(status);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByStatus(status, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -111,9 +124,13 @@ public class ProductController {
     }
 
     @GetMapping("/owner/{id}/category/{categoryId}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByOwnerIdAndCategoryId(@PathVariable Long id, @PathVariable Long categoryId) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByOwnerIdAndCategoryId(
+            @PathVariable Long id, @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByOwnerIdAndCategoryId(id, categoryId);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByOwnerIdAndCategoryId(id, categoryId, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -121,9 +138,14 @@ public class ProductController {
     }
 
     @GetMapping("/owner/{id}/status/{status}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByOwnerIdAndStatus(@PathVariable Long id, @PathVariable String status) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByOwnerIdAndStatus(
+            @PathVariable Long id,
+            @PathVariable String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByOwnerIdAndStatus(id, status);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByOwnerIdAndStatus(id, status, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -131,9 +153,15 @@ public class ProductController {
     }
 
     @GetMapping("/owner/{id}/category/{categoryId}/status/{status}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByOwnerIdAndStatusAndCategoryId(@PathVariable Long id, @PathVariable String status, @PathVariable Long categoryId) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByOwnerIdAndStatusAndCategoryId(
+            @PathVariable Long id,
+            @PathVariable String status,
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByOwnerIdAndStatusAndCategoryId(id, status, categoryId);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByOwnerIdAndStatusAndCategoryId(id, status, categoryId, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -141,9 +169,14 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}/status/{status}")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategoryIdAndStatus(@PathVariable Long categoryId, @PathVariable String status) {
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> getProductsByCategoryIdAndStatus(
+            @PathVariable Long categoryId,
+            @PathVariable String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
         try {
-            List<ProductResponse> products = productService.getProductsByCategoryIdAndStatus(categoryId, status);
+            PageResponse<List<ProductResponse>> products = productService.getProductsByCategoryIdAndStatus(categoryId, status, page, size);
             return ResponseEntity.ok(new ApiResponse<>(products, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
@@ -159,5 +192,4 @@ public class ProductController {
             return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
         }
     }
-
 }

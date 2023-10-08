@@ -16,8 +16,10 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b")
     Page<Booking> findAll(Pageable pageable);
+
     Page<Booking> findAllByProductId(Long categoryId, Pageable pageable);
-    List<Booking> findAllByProductId(Long categoryId);
+
+    List<Booking> findAllByProductId(Long productId);
     @Query("SELECT b FROM Booking b WHERE b.borrower.id = :userId")
     Page<Booking> findAllByBorrowerId(Long userId, Pageable pageable);
     @Query("SELECT b FROM Booking b WHERE b.product.owner.id = :ownerId")

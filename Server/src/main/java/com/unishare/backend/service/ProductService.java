@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
     private final CloudinaryImageService cloudinaryImageService;
@@ -138,10 +137,6 @@ public class ProductService {
     }
 
     private ProductResponse convertToResponse(Product product) {
-        List<Long> bookingIds = bookingRepository.findAllByProductId(product.getId()).stream()
-                .map(Booking::getId)
-                .collect(Collectors.toList());
-
         ProductResponse response = convertToResponseHelp(product);
         response.setRating(getRating(product));
         response.setRatingCount(getRatingCount(product));
@@ -151,10 +146,6 @@ public class ProductService {
     }
 
     public ProductResponse convertToResponse(Product product, int dayCount) {
-        List<Long> bookingIds = bookingRepository.findAllByProductId(product.getId()).stream()
-                .map(Booking::getId)
-                .collect(Collectors.toList());
-
         ProductResponse response = convertToResponseHelp(product);
         response.setRating(getRating(product));
         response.setRatingCount(getRatingCount(product));
@@ -198,89 +189,186 @@ public class ProductService {
         return convertToResponse(product);
     }
 
-    public List<ProductResponse> getProductsByCategoryId(Long id) {
-        List<Product> products = productRepository.findAllByCategoryId(id);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByCategoryId(Long id, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByCategoryId(id, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByOwnerId(Long id) {
-        List<Product> products = productRepository.findAllByOwnerId(id);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByOwnerId(Long id, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByOwnerId(id, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByOwnerIdAndStatus(Long id, String status) {
-        List<Product> products = productRepository.findAllByOwnerIdAndStatus(id, status);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByOwnerIdAndStatus(Long id, String status, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByOwnerIdAndStatus(id, status, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByOwnerIdAndStatusAndCategoryId(Long id, String status, Long categoryId) {
-        List<Product> products = productRepository.findAllByOwnerIdAndStatusAndCategoryId(id, status, categoryId);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByOwnerIdAndStatusAndCategoryId(Long id, String status, Long categoryId, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByOwnerIdAndStatusAndCategoryId(id, status, categoryId, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByOwnerIdAndCategoryId(Long id, Long categoryId) {
-        List<Product> products = productRepository.findAllByOwnerIdAndCategoryId(id, categoryId);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByOwnerIdAndCategoryId(Long id, Long categoryId, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByOwnerIdAndCategoryId(id, categoryId, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByStatus(String status) {
-        List<Product> products = productRepository.findAllByStatus(status);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByStatus(String status, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByStatus(status, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByCategoryIdAndStatus(Long categoryId, String status) {
-        List<Product> products = productRepository.findAllByCategoryIdAndStatus(categoryId, status);
-        return products.stream()
+    public PageResponse<List<ProductResponse>> getProductsByCategoryIdAndStatus(Long categoryId, String status, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findAllByCategoryIdAndStatus(categoryId, status, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
     }
 
-    public List<ProductResponse> getProductsByCategoryIdAndStatusWithDayCount(Long categoryId, String status, int dayCount) {
-        List<Product> products = productRepository.findAllByCategoryIdAndStatus(categoryId, status);
-        return products.stream()
-                .map(product -> convertToResponse(product, dayCount))
-                .collect(Collectors.toList());
-    }
-
-    public List<ProductResponse> getProductsByCategoryIdAndStatusAndDayCountAndPriceAsc(Long categoryId, String status, int dayCount) {
-        List<ProductResponse> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
-        return products.stream()
-                .sorted(Comparator.comparingDouble(ProductResponse::getTotalPrice))
-                .collect(Collectors.toList());
-    }
-
-    public List<ProductResponse> getProductsByCategoryIdAndStatusAndDayCountAndPriceDesc(Long categoryId, String status, int dayCount) {
-        List<ProductResponse> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
-        return products.stream()
-                .sorted(Comparator.comparingDouble(ProductResponse::getTotalPrice).reversed())
-                .collect(Collectors.toList());
-    }
-
-    public List<ProductResponse> getProductsByCategoryIdAndStatusAndDayCountAndRatingAsc(Long categoryId, String status, int dayCount) {
-        List<ProductResponse> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
-        return products.stream()
-                .sorted(Comparator.comparingDouble(ProductResponse::getRating))
-                .collect(Collectors.toList());
-    }
-
-    public List<ProductResponse> getProductsByCategoryIdAndStatusAndDayCountAndRatingDesc(Long categoryId, String status, int dayCount) {
-        List<ProductResponse> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
-        return products.stream()
-                .sorted(Comparator.comparingDouble(ProductResponse::getRating).reversed())
-                .collect(Collectors.toList());
-    }
+//    public List<ProductResponse> getProductsByCategoryIdWithDayCount(Long categoryId, int dayCount, int page, int size) {
+//        if (size == Integer.MAX_VALUE) page = 0;
+//        List<Product> products = productRepository.findAllByCategoryId(categoryId, PageRequest.of(page, size)).stream().toList();
+//        return products.stream()
+//                .map(product -> convertToResponse(product, dayCount))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public PageResponse<List<ProductResponse>> getProductsByCategoryIdAndStatusAndDayCountAndPriceAsc(Long categoryId, int dayCount, int page, int size) {
+////        List<ProductResponse> products = getProductsByCategoryIdWithDayCount(categoryId, dayCount, page, size);
+////
+////        products = products.stream()
+////                .sorted(Comparator.comparingDouble(ProductResponse::getTotalPrice))
+////                .collect(Collectors.toList());
+//
+//        if (size == Integer.MAX_VALUE) page = 0;
+//        Page<Product> products = productRepository.findAllByCategoryId(categoryId, PageRequest.of(page, size));
+//
+//        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+//        List<ProductResponse> productResponses = products.stream()
+//                .map(product -> convertToResponse(product, dayCount))
+//                .collect(Collectors.toList());
+//
+//        pageResponses = pageResponses.stream()
+//                .sorted(Comparator.comparingDouble(ProductResponse::getTotalPrice))
+//                .collect(Collectors.toList());
+//
+//        pageResponses.setData(productResponses);
+//        pageResponses.setTotalPages(products.getTotalPages());
+//        pageResponses.setTotalElements(products.getTotalElements());
+//        pageResponses.setCurrentPage(products.getNumber());
+//        pageResponses.setCurrentElements(products.getNumberOfElements());
+//
+//        return pageResponses;
+//    }
+//
+//    public PageResponse<List<ProductResponse>> getProductsByCategoryIdAndStatusAndDayCountAndPriceDesc(Long categoryId, String status, int dayCount) {
+//        PageResponse<List<ProductResponse>> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
+//        return products.stream()
+//                .sorted(Comparator.comparingDouble(ProductResponse::getTotalPrice).reversed())
+//                .collect(Collectors.toList());
+//    }
+//
+//    public PageResponse<List<ProductResponse>> getProductsByCategoryIdAndStatusAndDayCountAndRatingAsc(Long categoryId, String status, int dayCount) {
+//        PageResponse<List<ProductResponse>> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
+//        return products.stream()
+//                .sorted(Comparator.comparingDouble(ProductResponse::getRating))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public PageResponse<List<ProductResponse>> getProductsByCategoryIdAndStatusAndDayCountAndRatingDesc(Long categoryId, String status, int dayCount) {
+//        PageResponse<List<ProductResponse>> products = getProductsByCategoryIdAndStatusWithDayCount(categoryId, status, dayCount);
+//
+//    }
 
     private boolean canBeRestricted(Product product) {
         List<Booking> bookings = bookingRepository.findAllByProductId(product.getId());
@@ -309,9 +397,8 @@ public class ProductService {
         }
     }
 
-    // restricted user's product
     public void restrictProductOfUser(Long id) {
-        List<Product> products = productRepository.findAllByOwnerId(id);
+        List<Product> products = productRepository.findAllByOwnerId(id, PageRequest.of(0, Integer.MAX_VALUE)).stream().toList();
         for (Product product : products) {
             if (canBeRestricted(product)) {
                 product.setStatus("Restricted");

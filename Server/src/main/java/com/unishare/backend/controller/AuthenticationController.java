@@ -27,9 +27,6 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService service;
-    private final MailSendingService mailSendingService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
 
     @PostMapping("/register")
