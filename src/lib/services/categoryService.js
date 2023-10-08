@@ -5,7 +5,7 @@ const CategoryService = {
   },
 
   create: (category) => {
-    return api.postAsync("/categories", category);
+    return api.postFormAsync("/categories", category);
   },
 
   update: (category) => {

@@ -80,7 +80,7 @@ const Page = () => {
         });
       })
       .catch((err) => {
-        console.log(err);
+        toast.error(err.message);
       });
   }, []);
 
@@ -98,7 +98,7 @@ const Page = () => {
         ]}
       />
       <CommonTable
-        columns={["id", "categoryName", "description"]}
+        columns={["id", "categoryName", "description", "image"]}
         data={
           category &&
           category.map((item) => {
@@ -106,6 +106,7 @@ const Page = () => {
               id: item.id,
               categoryName: item.categoryName,
               description: item.description,
+              image: item.image,
             };
           })
         }

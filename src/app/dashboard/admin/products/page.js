@@ -15,24 +15,56 @@ const Page = () => {
   const { product } = useSelector((state) => state.product);
   const router = useRouter();
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(10);
-  // Get current posts
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = product?.slice(indexOfFirstPost, indexOfLastPost);
-
-  const paginateFront = () => {
-    const totalPages = Math.ceil(product?.length / postsPerPage);
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    postsPerPage: 5,
+    currentElements: 0,
+    totalPosts: 0,
+  });
 
   const paginateBack = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (pagination.currentPage <= 0) return;
+    else
+      ProductService.getPaginated(
+        pagination.currentPage - 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          dispatch(setProduct(res.data));
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
+  const paginateFront = () => {
+    const totalPages = Math.ceil(
+      pagination.totalPosts / pagination.postsPerPage
+    );
+    if (pagination.currentPage >= totalPages - 1) return;
+    else
+      ProductService.getPaginated(
+        pagination.currentPage + 1,
+        pagination.postsPerPage
+      )
+        .then((res) => {
+          dispatch(setProduct(res.data));
+          setPagination({
+            ...pagination,
+            totalPosts: res.totalElements,
+            currentPage: res.currentPage,
+            currentElements: res.currentElements,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   };
 
   const handleRestrict = (e, id) => {
@@ -40,13 +72,6 @@ const Page = () => {
     ProductService.restrict(id)
       .then((res) => {
         toast.success("Product restricted successfully");
-        ProductService.getAll()
-          .then((res) => {
-            dispatch(setProduct(res.data));
-          })
-          .catch((err) => {
-            console.log(err);
-          });
       })
       .catch((err) => {
         toast.error("Something went wrong");
@@ -54,15 +79,25 @@ const Page = () => {
       });
   };
 
+  const getProducts = () => {
+    ProductService.getPaginated(pagination.currentPage, pagination.postsPerPage)
+      .then((res) => {
+        dispatch(setProduct(res.data));
+        setPagination({
+          ...pagination,
+          totalPosts: res.totalElements,
+          currentPage: res.currentPage,
+          currentElements: res.currentElements,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     if (!product) {
-      ProductService.getAll()
-        .then((res) => {
-          dispatch(setProduct(res.data));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      getProducts();
     }
   }, [product, dispatch]);
 
@@ -73,7 +108,7 @@ const Page = () => {
         description={`Total ${product && product.length} products`}
       />
       <CommonTable
-        columns={["productId", "name", "description", "baseprice", "status"]}
+        columns={["productId", "name", "description", "basePrice", "status"]}
         data={
           product &&
           product.map((item) => {
@@ -97,11 +132,15 @@ const Page = () => {
         ]}
       />
       <Pagination
-        postsPerPage={postsPerPage}
-        totalPosts={product?.length}
+        startIndex={pagination.currentPage * pagination.postsPerPage + 1}
+        endIndex={
+          pagination.currentPage * pagination.postsPerPage +
+          pagination.currentElements
+        }
+        postsPerPage={pagination.postsPerPage}
+        totalPosts={pagination.totalPosts}
         paginateBack={paginateBack}
         paginateFront={paginateFront}
-        currentPage={currentPage}
       />
     </div>
   );

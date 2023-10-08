@@ -99,7 +99,7 @@ export default function page() {
           booking.rentTo = booking.rentTo.slice(0, 10);
           booking.productName = booking.productResponse.name;
           booking.description = booking.productResponse.description;
-          booking.image = booking.productResponse.image;
+          booking.imageSrc = booking.productResponse.image1;
           booking.borrowerName = booking.borrower.fullName;
           booking.address = booking.borrower.address;
         });

@@ -1,5 +1,6 @@
 "use client";
 
+import ImageUpload from "@/components/GlobalComponents/ImageUpload/ImageUpload";
 import PageHeader from "@/components/OwnerComponents/PageHeader";
 import CategoryService from "@/lib/services/categoryService";
 import { setCategory } from "@/store/Slices/categorySlice";
@@ -16,13 +17,14 @@ const Page = () => {
 
   const [categoryName, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const category = {
-      categoryName: categoryName,
-      description,
-    };
+    const category = new FormData();
+    category.append("name", categoryName);
+    category.append("description", description);
+    category.append("image", image);
     CategoryService.create(category)
       .then((res) => {
         toast.success("Category added successfully");
@@ -114,6 +116,22 @@ const Page = () => {
                 placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          </div>
+          {/* Image */}
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                htmlFor="grid-description"
+              >
+                Image
+              </label>
+              <ImageUpload
+                label={"Image"}
+                onImageChange={(e) => setImage(e)}
+                currentImage={image}
               />
             </div>
           </div>

@@ -9,6 +9,10 @@ const ProductService = {
     return api.getAsync(`/products/category/${category}`);
   },
 
+  getPaginated: (page, size) => {
+    return api.getAsync(`/products?page=${page}&size=${size}`);
+  },
+
   create: (product) => {
     return api.postFormAsync("/products", product);
   },
