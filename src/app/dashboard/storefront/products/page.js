@@ -1,6 +1,8 @@
 "use client";
 import Search from "@/components/BorrowerComponents/Search";
+import CategoryService from "@/lib/services/categoryService";
 import ProductService from "@/lib/services/productService";
+import { setCategory } from "@/store/Slices/categorySlice";
 import { setProduct } from "@/store/Slices/productSlice";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -8,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function page() {
   const products = useSelector((state) => state.product.product);
+  const categories = useSelector((state) => state.category.category);
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -22,11 +25,16 @@ export default function page() {
         dispatch(setProduct(res.data));
       });
     }
+    if (!categories && user) {
+      CategoryService.getAll().then((res) => {
+        dispatch(setCategory(res.data));
+      });
+    }
   }, [products, user, dispatch]);
 
   return (
     <div className="bg-white my-5">
-      <Search />
+      <Search categories={categories} />
       {!products && (
         <div className="flex justify-center items-center h-96">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-600 m-4"></div>
@@ -44,7 +52,7 @@ export default function page() {
 
           <div className="-mx-px grid grid-cols-2 border-l border-gray-200 sm:mx-0 md:grid-cols-3 lg:grid-cols-4">
             {products?.map((product) => (
-              <a
+              <button
                 onClick={() => handleProductClick(product.productId)}
                 key={product.productId}
                 className="group relative border-b border-r border-gray-200 p-4 sm:p-6"
@@ -72,7 +80,7 @@ export default function page() {
                     TK. {product.perDayPrice} / Day
                   </p>
                 </div>
-              </a>
+              </button>
             ))}
           </div>
         </div>
