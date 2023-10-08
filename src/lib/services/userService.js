@@ -33,6 +33,10 @@ const UserService = {
   autoVerify: () => {
     return api.postAsync(`/auth/verify-me`);
   },
+
+  getNotifications: () => {
+    return api.getAsync("/notifications");
+  },
 };
 
 export default UserService;

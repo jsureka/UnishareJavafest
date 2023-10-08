@@ -1,15 +1,22 @@
 "use client";
+import UserService from "@/lib/services/userService";
 import { Popover } from "@headlessui/react";
 import {
   Bars3Icon,
   BellAlertIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Tooltip } from "@material-tailwind/react";
+import {
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
+  Tooltip,
+} from "@material-tailwind/react";
 import { ArrowCircleRightOutlined } from "@mui/icons-material";
 import { Drawer } from "@mui/material";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 function classNames(...classes) {
@@ -18,9 +25,14 @@ function classNames(...classes) {
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [active, setActive] = useState("/");
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const user = useSelector((state) => state.user.currentUser);
+  const [notifications, setNotifications] = useState([]);
+  const handleNotificationClick = () => {
+    UserService.getNotifications().then((res) => {
+      setNotifications(res);
+    });
+  };
   const navbarItems = [
     { name: "Home", key: "/", href: "/dashboard/storefront/home" },
     {
@@ -35,6 +47,14 @@ const Navbar = () => {
     },
     { name: "Orders", key: "history", href: "/dashboard/storefront/history" },
   ];
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      UserService.getNotifications().then((res) => {
+        setNotifications(res);
+      });
+    }
+  }, [isAuthenticated]);
   return (
     <div className="relative bg-gray-600">
       {/* Navigation */}
@@ -200,10 +220,34 @@ const Navbar = () => {
                           {/* Logout Icon  */}
                           {isAuthenticated && (
                             <>
-                              <BellAlertIcon
-                                className="h-6 w-6 flex-shrink-0 mr-4 text-white"
-                                aria-hidden="true"
-                              />
+                              <Menu>
+                                <MenuHandler>
+                                  <BellAlertIcon
+                                    className="flex-shrink-0 h-6 w-6 mr-4 text-white"
+                                    aria-hidden="true"
+                                    onClick={handleNotificationClick}
+                                  />
+                                </MenuHandler>
+                                <MenuList>
+                                  {notifications &&
+                                    notifications.map((notification) => (
+                                      <MenuItem
+                                        key={notification.id}
+                                        onClick={() => {
+                                          UserService.deleteNotification(
+                                            notification.id
+                                          ).then((res) => {
+                                            toast.success(
+                                              "Notification deleted"
+                                            );
+                                          });
+                                        }}
+                                      >
+                                        {notification.message}
+                                      </MenuItem>
+                                    ))}
+                                </MenuList>
+                              </Menu>
                               <Link
                                 href="/dashboard/storefront/user"
                                 className="text-sm font-medium text-white hover:text-gray-100"
