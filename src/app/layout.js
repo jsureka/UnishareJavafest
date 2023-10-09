@@ -10,10 +10,6 @@ const RootLayout = ({ children }) => {
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta
-          httpEquiv="Content-Security-Policy"
-          content="upgrade-insecure-requests"
-        ></meta>
         <title>Unishare</title>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkBNch66QwlX2bWun9ka43xSs2midkw18&libraries=places"></script>
       </head>
