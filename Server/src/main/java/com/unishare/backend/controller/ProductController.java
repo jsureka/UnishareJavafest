@@ -183,6 +183,20 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageResponse<List<ProductResponse>>>> searchProducts(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
+        try {
+            PageResponse<List<ProductResponse>> products = productService.getProductBySearchingKeyWord(keyword, page, size);
+            return ResponseEntity.ok(new ApiResponse<>(products, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
+        }
+    }
+
     @PostMapping("/restricted/{id}")
     public ResponseEntity<ApiResponse<Boolean>> restrictProduct(@PathVariable Long id) {
         try {

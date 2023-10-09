@@ -1,6 +1,7 @@
 package com.unishare.backend.repository;
 
 import com.unishare.backend.model.Product;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,4 +39,25 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT p FROM Product p")
     Page<Product> getProductsPage(final Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword), '%')")
+    Page<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
+
+
+//    @Query("SELECT p FROM Product p WHERE " +
+//           "(:keywords IS NULL OR " +
+//                   "LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword1), '%') " +
+//                   "OR LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword2), '%') " +
+//                   "OR LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword3), '%'))")
+//    Page<Product> advancedSearch(String keywords, Pageable pageable);
+//
+//    default Page<Product> advancedSearchByKeywords(String keywords, Pageable pageable) {
+//        String[] keywordArray = keywords.split("\\s+");
+//        String query = "SELECT p FROM Product p WHERE (:keywords IS NULL";
+//        for (int i = 0; i < keywordArray.length; i++) {
+//            query += " OR LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword" + (i + 1) + "), '%')";
+//        }
+//        query += ")";
+//        return advancedSearch(keywords, pageable);
+//    }
 }

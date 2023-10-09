@@ -315,6 +315,24 @@ public class ProductService {
         return pageResponses;
     }
 
+    public PageResponse<List<ProductResponse>> getProductBySearchingKeyWord(String keyword, int page, int size) {
+        if (size == Integer.MAX_VALUE) page = 0;
+        Page<Product> products = productRepository.findByNameContainingIgnoreCase(keyword, PageRequest.of(page, size));
+
+        PageResponse<List<ProductResponse>> pageResponses = new PageResponse<>();
+        List<ProductResponse> productResponses = products.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+
+        pageResponses.setData(productResponses);
+        pageResponses.setTotalPages(products.getTotalPages());
+        pageResponses.setTotalElements(products.getTotalElements());
+        pageResponses.setCurrentPage(products.getNumber());
+        pageResponses.setCurrentElements(products.getNumberOfElements());
+
+        return pageResponses;
+    }
+
 //    public List<ProductResponse> getProductsByCategoryIdWithDayCount(Long categoryId, int dayCount, int page, int size) {
 //        if (size == Integer.MAX_VALUE) page = 0;
 //        List<Product> products = productRepository.findAllByCategoryId(categoryId, PageRequest.of(page, size)).stream().toList();
@@ -407,4 +425,5 @@ public class ProductService {
             }
         }
     }
+
 }
