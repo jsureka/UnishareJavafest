@@ -132,6 +132,10 @@ public class ProductService {
         for (Long bid : bookingIds) {
            Booking booking = bookingRepository.findById(bid)
                    .orElseThrow(() -> new ErrorMessageException("Booking not found with ID: " + bid));
+           if (booking.getStatus().equals(BookingStatus.CANCELLED)
+                     || booking.getStatus().equals(BookingStatus.REJECTED)
+                     || booking.getStatus().equals(BookingStatus.PENDING)
+           ) continue;
            Date rentFrom = booking.getRentFrom();
            Date rentTo = booking.getRentTo();
            for (Date date = rentFrom; date.before(rentTo); date = new Date(date.getTime() + 86400000)) {
