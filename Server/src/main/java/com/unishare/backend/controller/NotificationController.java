@@ -21,6 +21,19 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final UserService userService;
 
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<NotificationResponse>>> getAllNotifications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2147483647") int size
+    ) {
+        try {
+            List<NotificationResponse> notificationResponses = notificationService.getAllNotifications();
+            return ResponseEntity.ok(new ApiResponse<>(notificationResponses, null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(null, e.getMessage()));
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<NotificationResponse>> getNotificationById(@PathVariable Long id) {
         try {

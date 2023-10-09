@@ -91,7 +91,7 @@ public class BookingsService {
         User borrower = userRepository.findById(borrowerId)
                 .orElseThrow(() -> new ErrorMessageException("User not found with ID: " + borrowerId));
 
-        if (!isProductAvailable(product.getId(), bookingRequest)) {
+        if (!isProductAvailable(product.getId(), bookingRequest.getRentFrom(), bookingRequest.getRentTo())) {
             throw new RuntimeException("Product is not available for the requested dates");
         }
 
@@ -125,6 +125,10 @@ public class BookingsService {
 
         if (booking.getStatus() != BookingStatus.PENDING) {
             throw new RuntimeException("Booking is not ready to be accepted");
+        }
+
+        if (!isProductAvailable(booking.getProduct().getId(), booking.getRentFrom(), booking.getRentTo())) {
+            throw new RuntimeException("Product is not available for the requested dates");
         }
 
         booking.setStatus(BookingStatus.ACCEPTED);
@@ -270,10 +274,10 @@ public class BookingsService {
         return status.equals(BookingStatus.ACCEPTED) || status.equals(BookingStatus.LENT) || status.equals(BookingStatus.COMPLETED);
     }
 
-    private Boolean isProductAvailable(Long productId, BookingRequest bookingRequest) {
+    private Boolean isProductAvailable(Long productId, Date rentFrom, Date rentTo) {
         List<Booking> bookings = bookingRepository.findAllByProductId(productId);
         for (Booking booking : bookings) {
-            if (isBookedStatus(booking.getStatus()) && booking.getRentFrom().before(bookingRequest.getRentTo()) && booking.getRentTo().after(bookingRequest.getRentFrom())) {
+            if (isBookedStatus(booking.getStatus()) && booking.getRentFrom().before(rentTo) && booking.getRentTo().after(rentFrom)) {
                 return false;
             }
         }

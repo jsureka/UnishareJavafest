@@ -7,6 +7,7 @@ import com.unishare.backend.model.Notification;
 import com.unishare.backend.repository.NotificationRepository;
 import com.unishare.backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -19,16 +20,12 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
 
-    private NotificationRepository notificationRepository;
-    private UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository) {
-        this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
-    }
 
     public NotificationResponse makeNotificationResponse(Notification notification) {
         return new NotificationResponse(
@@ -41,7 +38,7 @@ public class NotificationService {
     }
 
     public List<NotificationResponse> getAllNotifications() {
-        List<Notification> notifications = notificationRepository.findAll();
+        List<Notification> notifications = notificationRepository.findAllByOrderByCreatedAtDesc();
         return notifications.stream().map(this::makeNotificationResponse).collect(Collectors.toList());
     }
 
@@ -65,7 +62,7 @@ public class NotificationService {
     }
 
     public List<NotificationResponse> getNotificationsByReceiverId(Long receiverId) {
-        List<Notification> notifications = notificationRepository.findByReceiverId(receiverId);
+        List<Notification> notifications = notificationRepository.findByReceiverIdOrderByCreatedAtDesc(receiverId);
         return notifications.stream().map(this::makeNotificationResponse).collect(Collectors.toList());
     }
 

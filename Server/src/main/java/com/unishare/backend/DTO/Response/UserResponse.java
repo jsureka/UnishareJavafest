@@ -1,5 +1,6 @@
 package com.unishare.backend.DTO.Response;
 
+import com.unishare.backend.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,4 +24,5 @@ public class UserResponse implements Serializable {
     private boolean isEmailVerified;
     private boolean isVerified;
     private boolean isBlocked;
+    private Role role;
 }

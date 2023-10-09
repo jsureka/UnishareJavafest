@@ -51,7 +51,8 @@ public class UserService {
                 user.getUniversity().getId(),
                 user.getIsEmailVerified(),
                 user.getIsVerified(),
-                user.getIsBlocked()
+                user.getIsBlocked(),
+                user.getRole()
         );
     }
 
