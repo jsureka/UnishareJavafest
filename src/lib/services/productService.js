@@ -9,6 +9,12 @@ const ProductService = {
     return api.getAsync(`/products/category/${category}`);
   },
 
+  serchProducts: (search, page, size) => {
+    return api.getAsync(
+      `/products/search?keyword=${search}&page=${page}&size=${size}`
+    );
+  },
+
   getPaginated: (page, size) => {
     return api.getAsync(`/products?page=${page}&size=${size}`);
   },
@@ -32,6 +38,7 @@ const ProductService = {
   getByUser: (id, page, size) => {
     return api.getAsync(`/products/owner/${id}?page=${page}&size=${size}`);
   },
+
   restrict: (id) => {
     return api.postAsync(`/products/restricted/${id}`);
   },

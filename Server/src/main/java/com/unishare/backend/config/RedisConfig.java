@@ -19,45 +19,6 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 public class RedisConfig {
-//    @Bean
-//    public RedisCacheConfiguration cacheConfiguration() {
-//        return RedisCacheConfiguration.defaultCacheConfig()
-//                .entryTtl(Duration.ofSeconds(60))
-//                .disableCachingNullValues()
-//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-//    }
-//
-//    @Bean
-//    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-//        return (builder) -> builder
-//                .withCacheConfiguration("university",
-//                        RedisCacheConfiguration.defaultCacheConfig()
-//                                .entryTtl(Duration.ofSeconds(100)));
-//    }
-
-//    @Bean
-//    public JedisConnectionFactory jedisConnectionFactory() {
-//        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-//        redisStandaloneConfiguration.setHostName("localhost");
-//        redisStandaloneConfiguration.setPort(6379);
-//        //redisStandaloneConfiguration.setPassword("password");
-//        return new JedisConnectionFactory(redisStandaloneConfiguration);
-//    }
-//
-//     @Bean
-//     public RedisTemplate<String, Object> redisTemplate() {
-//         RedisTemplate<String, Object> template = new RedisTemplate<>();
-//         template.setConnectionFactory(jedisConnectionFactory());
-//         template.setKeySerializer(new StringRedisSerializer());
-//         template.setHashKeySerializer(new StringRedisSerializer());
-//         template.setHashValueSerializer(new JdkSerializationRedisSerializer());
-//         template.setValueSerializer(new JdkSerializationRedisSerializer());
-//         template.setEnableTransactionSupport(true);
-//         template.afterPropertiesSet();
-//
-//         return template;
-//     }
-
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory factory =  new JedisConnectionFactory();

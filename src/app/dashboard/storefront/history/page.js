@@ -1,7 +1,6 @@
 "use client";
 import Pagination from "@/components/GlobalComponents/Pagination";
 import BookingService from "@/lib/services/bookingService";
-import ProductService from "@/lib/services/productService";
 import UserService from "@/lib/services/userService";
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { InfoRounded } from "@mui/icons-material";
@@ -46,21 +45,21 @@ export default function page() {
         pagination.postsPerPage
       )
         .then((res) => {
-          res.data.map((booking) => {
-            ProductService.getOne(booking.productResponse.productId).then(
-              (res) => {
-                booking.image = res.image1;
-                booking.productResponse = res;
-              }
-            );
+          // res.data.map((booking) => {
+          //   ProductService.getOne(booking.productResponse.productId).then(
+          //     (res) => {
+          //       booking.image = res.image1;
+          //       booking.productResponse = res;
+          //     }
+          //   );
 
-            booking.rentFrom = booking.rentFrom.slice(0, 10);
-            booking.rentTo = booking.rentTo.slice(0, 10);
-            booking.productName = booking.productResponse.name;
-            booking.description = booking.productResponse.description;
-            booking.borrowerName = booking.borrower.fullName;
-            booking.address = booking.borrower.address;
-          });
+          //   booking.rentFrom = booking.rentFrom.slice(0, 10);
+          //   booking.rentTo = booking.rentTo.slice(0, 10);
+          //   booking.productName = booking.productResponse.name;
+          //   booking.description = booking.productResponse.description;
+          //   booking.borrowerName = booking.borrower.fullName;
+          //   booking.address = booking.borrower.address;
+          // });
           setBookings(res.data);
           setPagination({
             ...pagination,
@@ -85,21 +84,21 @@ export default function page() {
         pagination.postsPerPage
       )
         .then((res) => {
-          res.data.map((booking) => {
-            ProductService.getOne(booking.productResponse.productId).then(
-              (res) => {
-                booking.image = res.image1;
-                booking.productResponse = res;
-              }
-            );
+          // res.data.map((booking) => {
+          //   ProductService.getOne(booking.productResponse.productId).then(
+          //     (res) => {
+          //       booking.image = res.image1;
+          //       booking.productResponse = res;
+          //     }
+          //   );
 
-            booking.rentFrom = booking.rentFrom.slice(0, 10);
-            booking.rentTo = booking.rentTo.slice(0, 10);
-            booking.productName = booking.productResponse.name;
-            booking.description = booking.productResponse.description;
-            booking.borrowerName = booking.borrower.fullName;
-            booking.address = booking.borrower.address;
-          });
+          //   booking.rentFrom = booking.rentFrom.slice(0, 10);
+          //   booking.rentTo = booking.rentTo.slice(0, 10);
+          //   booking.productName = booking.productResponse.name;
+          //   booking.description = booking.productResponse.description;
+          //   booking.borrowerName = booking.borrower.fullName;
+          //   booking.address = booking.borrower.address;
+          // });
           setBookings(res.data);
           setPagination({
             ...pagination,
@@ -174,22 +173,29 @@ export default function page() {
       pagination.postsPerPage
     )
       .then((res) => {
-        res.data.map((booking) => {
-          ProductService.getOne(booking.productResponse.productId).then(
-            (res) => {
-              booking.image = res.image1;
-              booking.productResponse = res;
-            }
-          );
+        // res.data.map((booking) => {
+        //   // ProductService.getOne(booking.productResponse.productId).then(
+        //   //   (res) => {
+        //   //     booking.image = res.image1;
+        //   //     booking.productResponse = res;
+        //   //   }
+        //   // );
 
-          booking.rentFrom = booking.rentFrom.slice(0, 10);
-          booking.rentTo = booking.rentTo.slice(0, 10);
-          booking.productName = booking.productResponse.name;
-          booking.description = booking.productResponse.description;
-          booking.borrowerName = booking.borrower.fullName;
-          booking.address = booking.borrower.address;
-        });
+        //   booking.rentFrom = booking.rentFrom.slice(0, 10);
+        //   booking.rentTo = booking.rentTo.slice(0, 10);
+        //   booking.productName = booking.productResponse.name;
+        //   booking.description = booking.productResponse.description;
+        //   booking.borrowerName = booking.borrower.fullName;
+        //   booking.address = booking.borrower.address;
+        //   booking.image = res.productResponse.image1;
+        // });
         setBookings(res.data);
+        setPagination({
+          ...pagination,
+          totalPosts: res.totalElements,
+          currentPage: res.currentPage,
+          currentElements: res.currentElements,
+        });
       })
       .catch((err) => {
         toast.error(err.message);
@@ -371,13 +377,15 @@ export default function page() {
                                 </div>
                                 <div className="ml-6 flex-1 text-sm">
                                   <div className="font-medium text-gray-900 sm:flex sm:justify-between">
-                                    <h5>{booking.productName}</h5>
+                                    <h5>
+                                      {booking.productResponse.productName}
+                                    </h5>
                                     <p className="mt-2 sm:mt-0">
                                       {booking.total}
                                     </p>
                                   </div>
                                   <p className="hidden text-gray-500 sm:mt-2 sm:block">
-                                    {booking.description}
+                                    {booking.productResponse.description}
                                   </p>
                                   {/* order number, date placed, total bill */}
                                   <div className="mt-2 flex sm:mt-4 sm:space-x-4">
@@ -385,13 +393,13 @@ export default function page() {
                                       <span className=" font-semibold">
                                         From{" "}
                                       </span>{" "}
-                                      {booking.rentFrom}
+                                      {booking.rentFrom.slice(0, 10)}
                                     </p>
                                     <p className="text-gray-500">
                                       <span className=" font-semibold">
                                         To{" "}
                                       </span>{" "}
-                                      {booking.rentFrom}
+                                      {booking.rentTo.slice(0, 10)}
                                     </p>
                                     <p className=" text-red-800 font-bold">
                                       <span className=" font-semibold ">
@@ -420,7 +428,7 @@ export default function page() {
                               <button
                                 onClick={() =>
                                   handleOwnerDetails(
-                                    booking.productResponse.ownerId
+                                    booking.productResponse.owner.id
                                   )
                                 }
                                 className="flex items-center"

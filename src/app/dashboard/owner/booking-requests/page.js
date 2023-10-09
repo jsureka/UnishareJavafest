@@ -23,7 +23,16 @@ const Page = () => {
     BookingService.acceptBooking(id)
       .then((res) => {
         toast.success("Booking Accepted");
-        getBookings();
+        BookingService.ownerPending(
+          pagination.currentPage,
+          pagination.postsPerPage
+        )
+          .then((res) => {
+            setBookingsData(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       })
       .catch((err) => {
         toast.error(err.message);
@@ -48,17 +57,29 @@ const Page = () => {
         pagination.postsPerPage
       )
         .then((res) => {
-          setBookings(res.data);
-          setPagination({
-            ...pagination,
-            totalPosts: res.totalElements,
-            currentPage: res.currentPage,
-            currentElements: res.currentElements,
-          });
+          setBookingsData(res);
         })
         .catch((err) => {
           console.log(err);
         });
+  };
+
+  const setBookingsData = (res) => {
+    res.data.forEach((booking) => {
+      booking.image = booking.productResponse.image1;
+      booking.productName = booking.productResponse.name;
+      booking.borrowerName = booking.borrower.fullName;
+      booking.address = booking.borrower.address;
+      booking.rentFrom = booking.rentFrom.slice(0, 10);
+      booking.rentTo = booking.rentTo.slice(0, 10);
+    });
+    setBookings(res.data);
+    setPagination({
+      ...pagination,
+      totalPosts: res.totalElements,
+      currentPage: res.currentPage,
+      currentElements: res.currentElements,
+    });
   };
 
   const paginateFront = () => {
@@ -72,13 +93,7 @@ const Page = () => {
         pagination.postsPerPage
       )
         .then((res) => {
-          setBookings(res.data);
-          setPagination({
-            ...pagination,
-            totalPosts: res.totalElements,
-            currentPage: res.currentPage,
-            currentElements: res.currentElements,
-          });
+          setBookingsData(res);
         })
         .catch((err) => {
           console.log(err);
@@ -88,13 +103,7 @@ const Page = () => {
   useEffect(() => {
     BookingService.ownerPending(pagination.currentPage, pagination.postsPerPage)
       .then((res) => {
-        setBookings(res.data);
-        setPagination({
-          ...pagination,
-          totalPosts: res.totalElements,
-          currentPage: res.currentPage,
-          currentElements: res.currentElements,
-        });
+        setBookingsData(res);
       })
       .catch((err) => {
         console.log(err);

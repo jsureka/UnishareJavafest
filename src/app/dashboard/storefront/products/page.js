@@ -19,6 +19,18 @@ export default function page() {
     router.push(`/dashboard/storefront/products/${id}`);
   };
 
+  const onProductSearch = (search) => {
+    if (search === "") {
+      ProductService.getAll().then((res) => {
+        dispatch(setProduct(res.data));
+      });
+      return;
+    }
+    ProductService.serchProducts(search, 0, 100).then((res) => {
+      dispatch(setProduct(res.data));
+    });
+  };
+
   const handleCategoryChange = (category) => {
     setProduct(null);
     if (category === "0") {
@@ -47,7 +59,11 @@ export default function page() {
 
   return (
     <div className="bg-white my-5">
-      <Search categories={categories} onCategoryChange={handleCategoryChange} />
+      <Search
+        categories={categories}
+        onCategoryChange={handleCategoryChange}
+        onSearch={onProductSearch}
+      />
       {!products && (
         <div className="flex justify-center items-center h-96">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-600 m-4"></div>

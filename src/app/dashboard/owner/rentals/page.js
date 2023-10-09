@@ -109,7 +109,7 @@ const Page = () => {
           booking.rentFrom = booking.rentFrom.slice(0, 10);
           booking.rentTo = booking.rentTo.slice(0, 10);
           booking.productName = booking.productResponse.name;
-          booking.image = booking.productResponse.image;
+          booking.image = booking.productResponse.image1;
           booking.borrowerName = booking.borrower.fullName;
           booking.address = booking.borrower.address;
         });

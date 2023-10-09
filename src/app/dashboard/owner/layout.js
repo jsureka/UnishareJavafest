@@ -1,8 +1,16 @@
+"use client";
 import ProtectedRoute from "@/authGaurd/ProtectedRoutes";
 import Navbar from "@/components/BorrowerComponents/Navbar/Navbar";
 import Sidebar from "@/components/OwnerComponents/Sidebar";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const layout = ({ children }) => {
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const router = useRouter();
+  if (!isAuthenticated) {
+    router.push("/login");
+  }
   return (
     <>
       <ProtectedRoute>

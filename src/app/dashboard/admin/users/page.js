@@ -92,6 +92,33 @@ const Page = () => {
       });
   };
 
+  const handleUnBLock = (e, id) => {
+    e.preventDefault();
+    UserService.unblock(id)
+      .then((res) => {
+        toast.success("User unrestricted successfully");
+        UserService.getPaginated(
+          pagination.currentPage,
+          pagination.postsPerPage
+        )
+          .then((res) => {
+            dispatch(setUsers(res.data));
+            setPagination({
+              ...pagination,
+              totalPosts: res.totalElements,
+              currentPage: res.currentPage,
+              currentElements: res.currentElements,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     UserService.getPaginated(pagination.currentPage, pagination.postsPerPage)
       .then((res) => {
@@ -133,6 +160,13 @@ const Page = () => {
             type: "block",
             onClick: (e, id) => {
               handleBLock(e, id);
+            },
+          },
+          {
+            name: "Unrestrict",
+            type: "unblock",
+            onClick: (e, id) => {
+              handleUnBLock(e, id);
             },
           },
         ]}

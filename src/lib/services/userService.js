@@ -30,6 +30,9 @@ const UserService = {
   block: (id) => {
     return api.putAsync(`/users/block-user/${id}`);
   },
+  unblock: (id) => {
+    return api.putAsync(`/users/unblock-user/${id}`);
+  },
   autoVerify: () => {
     return api.postAsync(`/auth/verify-me`);
   },

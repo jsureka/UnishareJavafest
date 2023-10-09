@@ -37,7 +37,7 @@ const Sidebar = () => {
   const [navigation, setNavigation] = useState([
     {
       name: "Dashboard",
-      href: "/dashboard/owner",
+      href: "/dashboard/admin",
       icon: HomeIcon,
       current: true,
     },
@@ -65,7 +65,6 @@ const Sidebar = () => {
       icon: DocumentDuplicateIcon,
       current: false,
     },
-    { name: "Logout", href: "#", icon: ChartPieIcon, current: false },
   ]);
   const router = useRouter();
 
@@ -137,6 +136,24 @@ const Sidebar = () => {
                       </Link>
                     </li>
                   ))}
+                  <li>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem("jwt_token");
+                        router.push("/login");
+                      }}
+                      className={classNames(
+                        "text-gray-400 hover:text-white hover:bg-sky-800",
+                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                      )}
+                    >
+                      <ChartPieIcon
+                        className="h-6 w-6 shrink-0"
+                        aria-hidden="true"
+                      />
+                      Logout
+                    </button>
+                  </li>
                 </ul>
               </li>
             </ul>

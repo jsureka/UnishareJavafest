@@ -8,6 +8,7 @@ import { setProduct } from "@/store/Slices/productSlice";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 // Product List
 
@@ -39,7 +40,7 @@ const Page = () => {
           });
         })
         .catch((err) => {
-          console.log(err);
+          toast.error("Something went wrong");
         });
   };
 
@@ -63,7 +64,7 @@ const Page = () => {
           });
         })
         .catch((err) => {
-          console.log(err);
+          toast.error("Something went wrong");
         });
   };
 
@@ -75,7 +76,6 @@ const Page = () => {
       })
       .catch((err) => {
         toast.error("Something went wrong");
-        console.log(err);
       });
   };
 
@@ -91,7 +91,7 @@ const Page = () => {
         });
       })
       .catch((err) => {
-        console.log(err);
+        toast.error("Something went wrong");
       });
   };
 
@@ -116,7 +116,7 @@ const Page = () => {
               productId: item.productId,
               name: item.name,
               description: item.description,
-              baseprice: item.baseprice,
+              basePrice: item.basePrice,
               status: item.status,
             };
           })

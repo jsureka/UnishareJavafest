@@ -51,6 +51,7 @@ const Navbar = () => {
   useEffect(() => {
     if (isAuthenticated) {
       UserService.getNotifications().then((res) => {
+        res.splice(5, res.length - 5);
         setNotifications(res);
       });
     }
@@ -168,6 +169,13 @@ const Navbar = () => {
 
                   <div className="flex flex-1 items-center justify-end">
                     <div className="flex items-center lg:ml-8">
+                      {user && user.blocked && (
+                        <div className="flex items-center">
+                          <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-4">
+                            Restricted
+                          </span>
+                        </div>
+                      )}
                       {user && !user.verified && !user.emailVerified && (
                         <>
                           <div className="flex items-center">
@@ -228,22 +236,23 @@ const Navbar = () => {
                                     onClick={handleNotificationClick}
                                   />
                                 </MenuHandler>
-                                <MenuList>
+                                <MenuList className="">
                                   {notifications &&
                                     notifications.map((notification) => (
-                                      <MenuItem
-                                        key={notification.id}
-                                        onClick={() => {
-                                          UserService.deleteNotification(
-                                            notification.id
-                                          ).then((res) => {
-                                            toast.success(
-                                              "Notification deleted"
-                                            );
-                                          });
-                                        }}
-                                      >
-                                        {notification.message}
+                                      <MenuItem key={notification.id}>
+                                        <div class="block max-w-[18rem] rounded-lg border border-success bg-transparent  dark:bg-white">
+                                          <div class="p-6">
+                                            <p class="text-sm text-success font-semibold">
+                                              {notification.message}
+                                            </p>
+                                          </div>
+                                          <div class="border-t-2 border-success px-6 py-3 text-neutral-600 dark:border-success-30">
+                                            {/* createdAt */}
+                                            <p class="text-xs">
+                                              {notification.createdAt}
+                                            </p>
+                                          </div>
+                                        </div>
                                       </MenuItem>
                                     ))}
                                 </MenuList>
