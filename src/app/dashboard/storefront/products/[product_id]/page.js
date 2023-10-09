@@ -18,6 +18,7 @@ const Page = () => {
   const [product, setProduct] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
   const [owner, setOwner] = useState({});
+  const [disabledDates, setDisabledDates] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
@@ -28,6 +29,7 @@ const Page = () => {
       res.image1 && setThumbnails([res.image1]);
       res.image2 && setThumbnails((thumbnails) => [...thumbnails, res.image2]);
       res.image3 && setThumbnails((thumbnails) => [...thumbnails, res.image3]);
+      setDisabledDates(res.bookedDate.map((date) => new Date(date)));
       setOwner(res.owner);
     });
   }, [product_id]);
@@ -187,6 +189,7 @@ const Page = () => {
                     months={2}
                     moveRangeOnFirstSelection={false}
                     minDate={addDays(new Date(), -0)}
+                    disabledDates={disabledDates}
                     ranges={[selectionRange]}
                     onChange={handleSelect}
                     direction="horizontal"
