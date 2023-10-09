@@ -14,6 +14,7 @@ import com.unishare.backend.repository.BookingRepository;
 import com.unishare.backend.repository.CategoryRepository;
 import com.unishare.backend.repository.ProductRepository;
 import com.unishare.backend.repository.UserRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,10 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,6 +126,20 @@ public class ProductService {
         response.setOwner(userService.userResponseForOthers(product.getOwner()));
         response.setCategory(categoryService.makeCategoryResponse(product.getCategory()));
         response.setBookingIds(bookingIds);
+
+        // make a list of booked dates by all date of the range of rentfrom to rentto
+        List<Date> bookedDate = new ArrayList<>();
+        for (Long bid : bookingIds) {
+           Booking booking = bookingRepository.findById(bid)
+                   .orElseThrow(() -> new ErrorMessageException("Booking not found with ID: " + bid));
+           Date rentFrom = booking.getRentFrom();
+           Date rentTo = booking.getRentTo();
+           for (Date date = rentFrom; date.before(rentTo); date = new Date(date.getTime() + 86400000)) {
+               bookedDate.add(date);
+           }
+        }
+
+        response.setBookedDate(bookedDate);
         response.setImage1(product.getImage1());
         response.setImage2(product.getImage2());
         response.setImage3(product.getImage3());
@@ -141,6 +153,8 @@ public class ProductService {
         response.setRating(getRating(product));
         response.setRatingCount(getRatingCount(product));
         response.setTotalPrice(getTotalPrice(product));
+
+        System.out.println(product.getIsRestricted());
 
         return response;
     }
@@ -160,6 +174,12 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ErrorMessageException("Category not found with ID: " + categoryId));
         User owner = userService.getUserByToken(token);
+
+        if (owner.getIsVerified() == false || owner.getIsVerified() == null ||
+                owner.getIsEmailVerified() == false || owner.getIsEmailVerified() == null ||
+                owner.getIsBlocked() == true || owner.getIsBlocked() == null) {
+            throw new ErrorMessageException("User is not allowed to create product");
+        }
 
         Product product = new Product();
         product.setName(name);

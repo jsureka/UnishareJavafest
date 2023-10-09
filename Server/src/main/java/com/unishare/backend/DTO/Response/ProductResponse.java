@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -29,4 +30,5 @@ public class ProductResponse implements Serializable {
     private UserResponse owner;
     private CategoryResponse category;
     private List<Long> bookingIds = new ArrayList<>();
+    private List<Date> bookedDate = new ArrayList<>();
 }

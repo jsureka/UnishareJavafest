@@ -16,31 +16,31 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByOwnerId(Long ownerId);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.category.id = :categoryId")
+    @Query(value = "SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.isRestricted = false")
     Page<Product> findAllByCategoryId(Long categoryId, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId")
+    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.isRestricted = false")
     Page<Product> findAllByOwnerId(Long ownerId, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.status = :status")
+    @Query(value = "SELECT p FROM Product p WHERE p.status = :status AND p.isRestricted = false")
     Page<Product> findAllByStatus(String status, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.category.id = :categoryId")
+    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.category.id = :categoryId AND p.isRestricted = false")
     Page<Product> findAllByOwnerIdAndCategoryId(Long ownerId, Long categoryId, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.status = :status")
+    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.status = :status AND p.isRestricted = false")
     Page<Product> findAllByOwnerIdAndStatus(Long ownerId, String status, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.status = :status")
+    @Query(value = "SELECT p FROM Product p WHERE p.category.id = :categoryId AND p.status = :status AND p.isRestricted = false")
     Page<Product> findAllByCategoryIdAndStatus(Long categoryId, String status, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.category.id = :categoryId AND p.status = :status")
+    @Query(value = "SELECT p FROM Product p WHERE p.owner.id = :ownerId AND p.category.id = :categoryId AND p.status = :status AND p.isRestricted = false")
     Page<Product> findAllByOwnerIdAndStatusAndCategoryId(Long ownerId, String status, Long categoryId, Pageable pageable);
 
-    @Query(value = "SELECT p FROM Product p")
+    @Query(value = "SELECT p FROM Product p WHERE p.isRestricted = false")
     Page<Product> getProductsPage(final Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword), '%')")
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE CONCAT('%', LOWER(:keyword), '%') AND p.isRestricted = false")
     Page<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
 
 

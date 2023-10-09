@@ -36,7 +36,6 @@ public class UserService {
     private final CloudinaryImageService cloudinaryImageService;
 
 
-
     public UserResponse makeUserResponse(User user) {
         return new UserResponse(
                 user.getId(),
@@ -77,7 +76,7 @@ public class UserService {
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ErrorMessageException("User not found with ID: " + id));
-        return makeUserResponse(user);
+        return userResponseForOtherButMoreDetails(user);
     }
 
     @CacheEvict(value = {"user-all", "user-#id"}, allEntries = true)
@@ -102,11 +101,9 @@ public class UserService {
 
         List<Product> products = productRepository.findAllByOwnerId(id);
         for (Product product : products) {
-            if (canBeRestricted(product)) {
-                product.setStatus("Restricted");
-                product.setIsRestricted(true);
-                productRepository.save(product);
-            }
+            product.setStatus("Restricted");
+            product.setIsRestricted(true);
+            productRepository.save(product);
         }
 
         return makeUserResponse(user);
@@ -173,9 +170,26 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public UserResponse userResponseForOtherButMoreDetails(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setFullName(user.getFullName());
+        userResponse.setProfilePicture(user.getProfilePicture());
+        userResponse.setLat(user.getLat());
+        userResponse.setLng(user.getLng());
+        userResponse.setEmailVerified(user.getIsEmailVerified());
+        userResponse.setVerified(user.getIsVerified());
+        userResponse.setBlocked(user.getIsBlocked());
+        userResponse.setAddress(user.getAddress());
+        userResponse.setPhoneNumber(user.getPhoneNumber());
+        userResponse.setUniversity(user.getUniversity().getId());
+
+        return userResponse;
+    }
+
     public UserResponse userResponseForOthers(User user) {
         UserResponse userResponse = new UserResponse();
         userResponse.setFullName(user.getFullName());
+        userResponse.setProfilePicture(user.getProfilePicture());
         userResponse.setLat(user.getLat());
         userResponse.setLng(user.getLng());
         userResponse.setEmailVerified(user.getIsEmailVerified());
