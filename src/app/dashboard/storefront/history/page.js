@@ -393,8 +393,11 @@ export default function page() {
                                       </span>{" "}
                                       {booking.rentFrom}
                                     </p>
-                                    <p className="text-gray-500">
-                                      {booking.price}
+                                    <p className=" text-red-800 font-bold">
+                                      <span className=" font-semibold ">
+                                        Total Price :{" "}
+                                      </span>{" "}
+                                      Tk. {booking.productResponse.totalPrice}
                                     </p>
                                   </div>
                                 </div>

@@ -35,6 +35,7 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+    private  final  CorsConfig corsConfig;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -57,8 +58,8 @@ public class SecurityConfiguration {
             .logout()
             .logoutUrl("/api/auth/logout")
             .addLogoutHandler(logoutHandler)
-            .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-        ;
+            .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
+        http.cors().configurationSource(corsConfig);
 
         return http.build();
     }

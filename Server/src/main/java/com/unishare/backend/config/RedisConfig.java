@@ -60,7 +60,10 @@ public class RedisConfig {
 
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
-        return new JedisConnectionFactory();
+        JedisConnectionFactory factory =  new JedisConnectionFactory();
+        factory.setHostName("ec2-3-110-88-28.ap-south-1.compute.amazonaws.com");
+        factory.setPort(6379);
+        return  factory;
     }
 
     @Bean
