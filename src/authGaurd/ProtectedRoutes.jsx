@@ -13,10 +13,7 @@ const ProtectedRoute = ({ children }) => {
     if (!isAuthenticated && !localStorage.getItem("jwt_token")) {
       router.push("/login");
     }
-    if (isAuthenticated && user?.role !== "ADMIN") {
-      router.push("/dashboard/storefront/home");
-    }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, router]);
 
   return <>{children}</>;
 };
